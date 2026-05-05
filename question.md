@@ -46,14 +46,14 @@
 少样本重要性权重计算公式如下：
 
 $$
-m\_weights = \frac{counts_{max} - counts_{m} + counts_{min} \times 0.1}{counts_{max} + counts_{min} \times 0.1}
+m_{weights} = \frac{counts_{max} - counts_{m} + counts_{min} \times 0.1}{counts_{max} + counts_{min} \times 0.1}
 $$
 
 其中：
 - $counts_{max}$：样本数量最多的关系类型的样本个数
 - $counts_{min}$：样本数量最少的关系类型的样本个数
 - $counts_{m}$：当前关系类型的样本个数
-- $m\_weights$：当前关系类型的少样本重要性权重
+- $m_{weights}$：当前关系类型的少样本重要性权重
 
 为保证每个少样本重要性权重均大于 0，设置约束项 $counts_{min} \times 0.1$ 保证权重有效性。
 
@@ -63,13 +63,13 @@ $$
 关系类型 $m$ 的准确性分数计算公式：
 
 $$
-m\_score = \frac{m\_correct}{m\_total}
+m_{score} = \frac{m_{correct}}{m_{total}}
 $$
 
 其中：
-- $m\_score$：关系类型 $m$ 的准确性分数
-- $m\_correct$：关系类型 $m$ 中预测正确的数量
-- $m\_total$：关系类型 $m$ 中需要被正确预测的全部数量
+- $m_{score}$：关系类型 $m$ 的准确性分数
+- $m_{correct}$：关系类型 $m$ 中预测正确的数量
+- $m_{total}$：关系类型 $m$ 中需要被正确预测的全部数量
 
 ---
 
@@ -77,5 +77,5 @@ $$
 最终分数计算公式：
 
 $$
-Score\_final = \frac{\sum_{m} (m\_weights \times m\_score)}{\sum_{m} m\_weights}
+Score_{final} = \frac{\sum_{m} (m_{weights} \times m_{score})}{\sum_{m} m_{weights}}
 $$

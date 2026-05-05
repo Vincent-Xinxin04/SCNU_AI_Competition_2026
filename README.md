@@ -55,14 +55,14 @@
 少样本重要性权重计算公式如下：
 
 $$
-m\_weights = \frac{counts_{max} - counts_{m} + counts_{min} \times 0.1}{counts_{max} + counts_{min} \times 0.1}
+m_{weights} = \frac{counts_{max} - counts_{m} + counts_{min} \times 0.1}{counts_{max} + counts_{min} \times 0.1}
 $$
 
 其中：
 - $counts_{max}$：样本数量最多的关系类型的样本个数
 - $counts_{min}$：样本数量最少的关系类型的样本个数
 - $counts_{m}$：当前关系类型的样本个数
-- $m\_weights$：当前关系类型的少样本重要性权重
+- $m_{weights}$：当前关系类型的少样本重要性权重
 
 为保证每个少样本重要性权重均大于 0，设置约束项 $counts_{min} \times 0.1$ 保证权重有效性。
 
@@ -71,29 +71,30 @@ $$
 关系类型 $m$ 的准确性分数计算公式：
 
 $$
-m\_score = \frac{m\_correct}{m\_total}
+m_{score} = \frac{m_{correct}}{m_{total}}
 $$
 
 其中：
-- $m\_score$：关系类型 $m$ 的准确性分数
-- $m\_correct$：关系类型 $m$ 中预测正确的数量
-- $m\_total$：关系类型 $m$ 中需要被正确预测的全部数量
+- $m_{score}$：关系类型 $m$ 的准确性分数
+- $m_{correct}$：关系类型 $m$ 中预测正确的数量
+- $m_{total}$：关系类型 $m$ 中需要被正确预测的全部数量
 
 ### 最终分数计算规则
 
 最终分数计算公式：
 
 $$
-Score\_final = \frac{\sum_{m} (m\_weights \times m\_score)}{\sum_{m} m\_weights}
+Score_{final} = \frac{\sum_{m} (m_{weights} \times m_{score})}{\sum_{m} m_{weights}}
 $$
 
 ## 项目亮点
 
-- **全量 GPU 加速训练**：采用 PyTorch 和 CUDA 实现并开启混合精度训练 (AMP)，最大化利用 RTX 4060 GPU。
-- **多语言底座 (XLM-RoBERTa)**：原生支持 100 多种语言，无缝处理中文、各类小语种及特殊字符实体。
+- **全量 GPU 加速训练**：采用 PyTorch 和 CUDA 实现并开启混合精度训练 (AMP)，最大化利用 GPU 资源。
+- **更强大的预训练底座 (XLM-RoBERTa-Large)**：升级为 XLM-RoBERTa-Large，更大容量，原生支持 100 多种语言。
+- **Focal Loss 针对长尾分布**：启用 Focal Loss (γ=2.0) 针对极端长尾分布（最少样本仅为 1），聚焦少样本关系，提升其分类性能。
 - **Attention Pooling**：使用自注意力机制进行池化操作，精准提取关键特征。
-- **双重对抗与一致性正则 (FGM + R-Drop)**：针对极端长尾分布（最少样本仅为 1）加入词向量微小扰动 (FGM) 和双路径 Dropout 概率一致性对齐 (R-Drop)，防止在少样本关系上严重过拟合。
-- **严格指标对齐与标签平滑**：完全依照 `question.md` 使用 $m\_weights$ 加权，同时融合 Label Smoothing=0.1 抑制模型在长尾分布下的过度自信。
+- **双重对抗与一致性正则 (FGM + R-Drop)**：加入词向量微小扰动 (FGM, ε=1.0) 和双路径 Dropout 概率一致性对齐 (R-Drop, α=0.8)，防止在少样本关系上严重过拟合。
+- **严格指标对齐与标签平滑**：完全依照 `question.md` 使用 $m_{weights}$ 加权，同时融合 Label Smoothing=0.05 抑制模型在长尾分布下的过度自信。
 
 ## 环境配置
 
@@ -110,28 +111,30 @@ $$
 
 请在虚拟环境下运行以下命令启动训练。模型将自动加载 `dataset/Train_Set/` 下的训练数据进行权重计算和训练。
 
-```powershell
-python src/train.py --batch_size 32 --epochs 15 --model_name xlm-roberta-base
+```bash
+cd /home/SCNU_AI_Competition
+python scratch/train_optm.py
 ```
 
-*提示：开启 R-Drop 和 FGM 后计算量会翻倍，因此默认 batch_size 调整为了 32 以适应显存。*
+*提示：使用 XLM-RoBERTa-Large + R-Drop + FGM 计算量较大，因此默认 batch_size 调整为 16。*
 
 ### 2. 模型推理
 
-训练完成后，你可以使用训练好的权重在测试集上进行预测：
+训练完成后，模型保存在 `model/v5_xlmr_large_focal/`，你可以使用训练好的权重在测试集上进行预测：
 
-```powershell
-python src/infer.py --batch_size 128 --checkpoint model_epoch_15.pt --model_name xlm-roberta-base
+```bash
+python scratch/infer_optm.py
 ```
 
-这将在根目录下生成 `submission.csv` 文件，其内容格式为：`Subject, Object, Label`。
+这将在根目录下生成 `result/submission.csv` 文件，其内容格式为：`Subject, Object, Label`。
 
 ## 目录结构
 
 ```text
-f:\SCNU_AI_Competition\
+/home/SCNU_AI_Competition/
 │  question.md          # 赛题说明，包含完整的评价指标定义
 │  README.md            # 项目说明文档
+│  relation_weights.json # 关系权重文件
 │
 ├─dataset\
 │  ├─Train_Set\         # 训练集，包含 563 个 CSV 文件，每个文件对应一种关系
@@ -144,7 +147,14 @@ f:\SCNU_AI_Competition\
 │  ├─train.py           # 基于 PaddlePaddle 的训练脚本
 │  └─infer.py           # 基于 PaddlePaddle 的推理脚本
 │
-└─venv\                 # Python 虚拟环境
+├─scratch\
+│  ├─train_optm.py      # 优化版训练脚本（当前使用）
+│  └─infer_optm.py      # 优化版推理脚本
+│
+├─model\                # 模型输出目录
+│  └─v5_xlmr_large_focal/ # XLM-RoBERTa-Large + Focal Loss 模型
+│
+└─result\               # 推理结果目录
 ```
 
 ## 数据集结构详解
@@ -165,11 +175,23 @@ f:\SCNU_AI_Competition\
 
 本项目采用的模型架构包括：
 
-1. **预训练语言模型**：XLM-RoBERTa-base 作为编码器底座
+1. **预训练语言模型**：XLM-RoBERTa-Large 作为编码器底座
 2. **Attention Pooling**：使用自注意力机制聚合序列表示
-3. **Multi-Sample Dropout**：在训练时使用多个 Dropout 样本增强泛化能力
-4. **FGM 对抗训练**：对词向量添加小扰动，提升模型鲁棒性
-5. **R-Drop 一致性正则**：强制两个带不同 Dropout 的前向传播输出保持一致
+3. **Focal Loss**：针对极端长尾分布，聚焦少样本关系，γ=2.0
+4. **FGM 对抗训练**：对词向量添加小扰动，ε=1.0，提升模型鲁棒性
+5. **R-Drop 一致性正则**：强制两个前向传播输出保持一致，α=0.8
+6. **Label Smoothing**：抑制模型在长尾分布下的过度自信，LS=0.05
+
+## 超参数
+
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| 模型 | FacebookAI/xlm-roberta-large | 预训练模型 |
+| batch_size | 16 | 训练批次大小 |
+| epochs | 15 | 训练轮数 |
+| lr | 1e-5 | 学习率 |
+| max_length | 192 | 最大序列长度 |
+| patience | 5 | 早停轮数 |
 
 ## 依赖环境
 
@@ -180,3 +202,4 @@ f:\SCNU_AI_Competition\
 - pandas
 - numpy
 - scikit-learn
+- sentencepiece (用于某些 tokenizer)
