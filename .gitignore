@@ -1,8 +1,6 @@
 # 忽略根目录下的文件夹
 /dataset/
-/baseline/
 /model/
-/result/
 /scratch/
 
 # 临时文件、系统文件
