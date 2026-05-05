@@ -1,0 +1,21 @@
+# 忽略根目录下的文件夹
+/dataset/
+/baseline/
+/model/
+/result/
+/scratch/
+
+# 临时文件、系统文件
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# 日志、环境配置
+*.log
+.env
+.venv/
