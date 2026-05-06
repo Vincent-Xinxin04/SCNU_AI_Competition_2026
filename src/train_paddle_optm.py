@@ -132,7 +132,7 @@ class CPAModel(nn.Layer):
         mask = paddle.cast(attention_mask, dtype='float32').unsqueeze(-1)
         sum_embeddings = paddle.sum(seq_output * mask, axis=1)
         sum_mask = paddle.sum(mask, axis=1)
-        mean_pooled = sum_embeddings / paddle.clip(sum_mask, min=1e-9)
+        mean_pooled = sum_embeddings / sum_mask
         
         logits = self.classifier(self.dropout(mean_pooled))
         return logits
@@ -248,24 +248,19 @@ def run_training(args):
     counts = raw_train_df['label'].value_counts()
     rare_labels = counts[counts < 2].index
     df_rare = raw_train_df[raw_train_df['label'].isin(rare_labels)]
-    df_common = raw_train_df[raw_train_df['label'].isin(counts[counts >= 2].index)]
+    df_common = raw_train_df[~raw_train_df['label'].isin(rare_labels)]
 
-    if len(df_common) == 0 and len(df_rare) == 0:
-        raise ValueError("no data found")
+    if len(df_common) == 0:
+        raise ValueError("data num < 2, can't split dataset")
 
-    if len(df_common) > 0:
-        train_c, val_c = train_test_split(
-            df_common,
-            test_size=args.val_ratio,
-            stratify=df_common['label'],
-            random_state=args.random_seed,
-        )
-        train_df = pd.concat([train_c, df_rare]).sample(frac=1, random_state=args.random_seed).reset_index(drop=True)
-        val_df = val_c.reset_index(drop=True)
-    else:
-        train_df = df_rare.sample(frac=1, random_state=args.random_seed).reset_index(drop=True)
-        val_df = train_df.iloc[:1] # dummy val
-        
+    train_c, val_c = train_test_split(
+        df_common,
+        test_size=args.val_ratio,
+        stratify=df_common['label'],
+        random_state=args.random_seed,
+    )
+    train_df = pd.concat([train_c, df_rare]).sample(frac=1, random_state=args.random_seed).reset_index(drop=True)
+    val_df = val_c.reset_index(drop=True)
     logging.info(f'split success: train={len(train_df)}, val={len(val_df)}')
 
     # 4. Tokenizer & DataLoader
@@ -317,23 +312,14 @@ def run_training(args):
             if batch is None:
                 continue
 
-            input_ids = batch['data']
-            mask = batch['cls_mask']
-            label_ids = batch['label']
+            input_ids = paddle.to_tensor(batch['data'], dtype='int64') if not isinstance(batch['data'], paddle.Tensor) else batch['data']
+            mask = paddle.to_tensor(batch['cls_mask'], dtype='int64') if not isinstance(batch['cls_mask'], paddle.Tensor) else batch['cls_mask']
+            label_ids = paddle.to_tensor(batch['label'], dtype='int64') if not isinstance(batch['label'], paddle.Tensor) else batch['label']
 
             if use_amp:
                 with paddle.amp.auto_cast(enable=True):
-                    # R-Drop: Forward twice for consistency
-                    logits1 = model(input_ids, mask)
-                    logits2 = model(input_ids, mask)
-                    ce_loss = (loss_fn(logits1, label_ids) + loss_fn(logits2, label_ids)) / 2
-                    
-                    p = F.softmax(logits1, axis=-1)
-                    q = F.softmax(logits2, axis=-1)
-                    kl_loss = (F.kl_div(F.log_softmax(logits1, axis=-1), q, reduction='none').sum(-1) + 
-                               F.kl_div(F.log_softmax(logits2, axis=-1), p, reduction='none').sum(-1)) / 2
-                    loss = ce_loss + 0.7 * kl_loss.mean()
-                    
+                    logits = model(input_ids, mask)
+                    loss = loss_fn(logits, label_ids)
                 scaled = scaler.scale(loss)
                 scaled.backward()
                 
@@ -342,23 +328,16 @@ def run_training(args):
                 with paddle.amp.auto_cast(enable=True):
                     logits_adv = model(input_ids, mask)
                     loss_adv = loss_fn(logits_adv, label_ids)
-                scaler.scale(loss_adv).backward()
+                scaled_adv = scaler.scale(loss_adv)
+                scaled_adv.backward()
                 fgm.restore()
                 
                 scaler.step(optimizer)
                 scaler.update()
                 optimizer.clear_grad()
             else:
-                logits1 = model(input_ids, mask)
-                logits2 = model(input_ids, mask)
-                ce_loss = (loss_fn(logits1, label_ids) + loss_fn(logits2, label_ids)) / 2
-                
-                p = F.softmax(logits1, axis=-1)
-                q = F.softmax(logits2, axis=-1)
-                kl_loss = (F.kl_div(F.log_softmax(logits1, axis=-1), q, reduction='none').sum(-1) + 
-                           F.kl_div(F.log_softmax(logits2, axis=-1), p, reduction='none').sum(-1)) / 2
-                loss = ce_loss + 0.7 * kl_loss.mean()
-                
+                logits = model(input_ids, mask)
+                loss = loss_fn(logits, label_ids)
                 loss.backward()
                 
                 # FGM Attack
@@ -386,13 +365,13 @@ def run_training(args):
         with paddle.no_grad():
             for batch in val_loader:
                 if batch is None: continue
-                input_ids = batch['data']
-                mask = batch['cls_mask']
+                input_ids = paddle.to_tensor(batch['data'], dtype='int64') if not isinstance(batch['data'], paddle.Tensor) else batch['data']
+                mask = paddle.to_tensor(batch['cls_mask'], dtype='int64') if not isinstance(batch['cls_mask'], paddle.Tensor) else batch['cls_mask']
                 label_ids = batch['label']
                 
                 logits = model(input_ids, mask)
                 preds = paddle.argmax(logits, axis=1).numpy()
-                labels = label_ids.numpy()
+                labels = label_ids
                 
                 for p, l in zip(preds, labels):
                     m_total[l] += 1
@@ -429,7 +408,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_dir', type=str, default="./dataset/Train_Set")
     parser.add_argument('--output_dir', type=str, default='./cpa_output')
-    parser.add_argument('--shortcut_name', type=str, default='ernie-3.0-base-zh')
+    parser.add_argument('--shortcut_name', type=str, default='bert-base-uncased')
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--epoch', type=int, default=10)
     parser.add_argument('--lr', type=float, default=5e-5)
@@ -437,7 +416,7 @@ if __name__ == '__main__':
     parser.add_argument('--random_seed', type=int, default=42)
     parser.add_argument('--num_workers', type=int, default=0)
     parser.add_argument('--use_flash_attention', action='store_true')
-    parser.add_argument('--use_amp', action='store_true', default=True)
+    parser.add_argument('--use_amp', action='store_true')
     parser.add_argument('--warmup_ratio', type=float, default=0.1)
     parser.add_argument('--patience', type=int, default=3)
     parser.add_argument('--val_ratio', type=float, default=0.1)
