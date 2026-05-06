@@ -35,14 +35,33 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. 模型训练
+### 3. 数据预处理（可选，推荐）
+先运行预处理脚本生成缓存，加速后续训练：
+```bash
+python src/preprocess_data.py --max_length 64
+```
+预处理后的缓存保存在 `./dataset/cache/` 目录下。如需强制重建缓存：
+```bash
+python src/preprocess_data.py --max_length 64 --force_rebuild
+```
+
+### 4. 模型训练
 使用 `src/train_torch.py` 启动训练。默认使用 GPU 运行，并开启 AMP 混合精度加速。
 ```bash
-python src/train_torch.py --device cuda --batch_size 32 --epoch 10 --max_length 64
+python src/train_torch.py --device cuda --batch_size 32 --epoch 10 --max_length 64 --use_amp
 ```
 训练产出的模型将保存在 `./cpa_output/cpa_YYYYMMDD_HHMMSS/` 目录下。
 
-### 4. 模型推理
+主要参数说明：
+- `--device`: 设备选择 (cuda/cpu)
+- `--batch_size`: 批次大小
+- `--epoch`: 训练轮数
+- `--max_length`: 序列最大长度
+- `--use_amp`: 开启混合精度训练（推荐）
+- `--num_workers`: 数据加载进程数（默认 0，表示主进程加载）
+- `--force_rebuild_cache`: 强制重建数据缓存
+
+### 5. 模型推理
 推理时需指定训练产出的路径和标签文件：
 ```bash
 python src/infer_torch.py \
@@ -57,9 +76,11 @@ python src/infer_torch.py \
 SCNU_AI_Competition_2026/
 ├── baseline/               # 原始 Baseline 代码
 ├── dataset/                # 数据存放 (Train_Set/ , test.csv)
+│   └── cache/              # 预处理数据缓存（自动生成）
 ├── src/                    # 核心优化代码
-│   ├── train_torch.py       # 训练脚本 (Mean-Pooling + FGM + Weighted Loss)
-│   └── infer_torch.py       # 推理脚本
+│   ├── preprocess_data.py  # 数据预处理脚本
+│   ├── train_torch.py      # 训练脚本 (Mean-Pooling + FGM + Weighted Loss)
+│   └── infer_torch.py      # 推理脚本
 ├── cpa_output/             # 模型输出 (日志、权重、标签表)
 ├── result/                 # 预测结果 (submission.csv)
 └── requirements.txt        # 项目依赖

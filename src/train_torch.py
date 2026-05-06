@@ -81,7 +81,7 @@ def encode_pair(tokenizer, text_a, text_b, max_length):
         padding='max_length',
         truncation=True,
         return_attention_mask=True,
-        return_tensors='np'
+        return_tensors=None
     )
     
     input_ids = encoding['input_ids']
@@ -93,6 +93,73 @@ def encode_pair(tokenizer, text_a, text_b, max_length):
         attention_mask = [1] * seq_len + [0] * (max_length - seq_len)
 
     return np.array(input_ids, dtype='int64'), np.array(attention_mask, dtype='int64')
+
+
+def preprocess_and_cache_data(dataframe, tokenizer, label_encoder, max_length, cache_dir, cache_name, force_rebuild=False):
+    """
+    预处理数据并保存到缓存文件
+    """
+    os.makedirs(cache_dir, exist_ok=True)
+    cache_path = os.path.join(cache_dir, f'{cache_name}.npz')
+    
+    # 检查缓存是否存在
+    if not force_rebuild and os.path.exists(cache_path):
+        logging.info(f'Loading cached data from {cache_path}')
+        cached = np.load(cache_path, allow_pickle=True)
+        return cached['input_ids'], cached['attention_mask'], cached['labels']
+    
+    # 预处理数据
+    logging.info(f'Preprocessing data and saving to {cache_path}')
+    subject_col = None
+    object_col = None
+    for col in dataframe.columns:
+        if col.lower() == 'subject':
+            subject_col = col
+        elif col.lower() == 'object':
+            object_col = col
+    
+    input_ids_list = []
+    attention_mask_list = []
+    labels_list = []
+    
+    for idx, row in tqdm(dataframe.iterrows(), total=len(dataframe), desc='Preprocessing'):
+        subject_text = str(row[subject_col])
+        object_text = str(row[object_col])
+        input_ids, attention_mask = encode_pair(tokenizer, subject_text, object_text, max_length)
+        label_id = label_encoder.transform([row['label']])[0]
+        
+        input_ids_list.append(input_ids)
+        attention_mask_list.append(attention_mask)
+        labels_list.append(np.int64(label_id))
+    
+    # 保存到缓存
+    np.savez_compressed(
+        cache_path,
+        input_ids=np.array(input_ids_list),
+        attention_mask=np.array(attention_mask_list),
+        labels=np.array(labels_list)
+    )
+    logging.info(f'Data cached successfully to {cache_path}')
+    
+    return np.array(input_ids_list), np.array(attention_mask_list), np.array(labels_list)
+
+
+class CachedRelationDataset(Dataset):
+    def __init__(self, input_ids, attention_mask, labels):
+        self.input_ids = input_ids
+        self.attention_mask = attention_mask
+        self.labels = labels
+
+    def __len__(self):
+        return len(self.input_ids)
+
+    def __getitem__(self, idx):
+        return {
+            'valid': True,
+            'token_ids': self.input_ids[idx],
+            'cls_mask': self.attention_mask[idx],
+            'label_id': self.labels[idx],
+        }
 
 
 class RelationDataset(Dataset):
@@ -280,7 +347,22 @@ def run_training(args):
 
     tokenizer = AutoTokenizer.from_pretrained(args.shortcut_name)
     
-    train_dataset = RelationDataset(train_df, tokenizer, label_encoder, args.max_length)
+    # 设置缓存目录
+    cache_dir = os.path.join(os.path.dirname(args.train_dir), 'cache')
+    cache_suffix = f'{args.shortcut_name.replace("/", "_")}_len{args.max_length}'
+    
+    # 预处理并缓存训练集和验证集
+    train_input_ids, train_attention_mask, train_labels = preprocess_and_cache_data(
+        train_df, tokenizer, label_encoder, args.max_length, 
+        cache_dir, f'train_{cache_suffix}', args.force_rebuild_cache
+    )
+    val_input_ids, val_attention_mask, val_labels = preprocess_and_cache_data(
+        val_df, tokenizer, label_encoder, args.max_length, 
+        cache_dir, f'val_{cache_suffix}', args.force_rebuild_cache
+    )
+    
+    # 使用缓存的数据集
+    train_dataset = CachedRelationDataset(train_input_ids, train_attention_mask, train_labels)
     train_loader = DataLoader(
         train_dataset,
         batch_size=args.batch_size,
@@ -289,8 +371,9 @@ def run_training(args):
         num_workers=args.num_workers,
     )
     
+    val_dataset = CachedRelationDataset(val_input_ids, val_attention_mask, val_labels)
     val_loader = DataLoader(
-        RelationDataset(val_df, tokenizer, label_encoder, args.max_length),
+        val_dataset,
         batch_size=args.batch_size,
         shuffle=False,
         collate_fn=dynamic_collate_fn,
@@ -437,5 +520,6 @@ if __name__ == '__main__':
     parser.add_argument('--val_ratio', type=float, default=0.1)
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--fgm_epsilon', type=float, default=1.0)
+    parser.add_argument('--force_rebuild_cache', action='store_true', help='Force rebuild cache even if it exists')
     args = parser.parse_args()
     run_training(args)

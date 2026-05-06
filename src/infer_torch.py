@@ -45,7 +45,7 @@ def encode_pair(tokenizer, text_a, text_b, max_length):
         padding='max_length',
         truncation=True,
         return_attention_mask=True,
-        return_tensors='np'
+        return_tensors=None
     )
     input_ids = encoding['input_ids']
     attention_mask = encoding.get('attention_mask', None)
