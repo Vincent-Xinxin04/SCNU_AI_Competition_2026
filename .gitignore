@@ -17,3 +17,6 @@ Thumbs.db
 *.log
 .env
 .venv/
+
+# .trae/
+.trae/documents

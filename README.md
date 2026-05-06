@@ -1,6 +1,6 @@
 # SCNU AI Competition 2026 - 表格语义关系提取
 
-本项目旨在实现对表格列对（Subject, Object）之间语义关系的精准提取。模型基于 **PaddlePaddle** 框架开发，针对赛题的长尾分布和少样本（Few-Shot）评估标准进行了专项优化。
+本项目旨在实现对表格列对（Subject, Object）之间语义关系的精准提取。模型基于 **PyTorch** 框架开发，针对赛题的长尾分布和少样本（Few-Shot）评估标准进行了专项优化。
 
 ## 核心优化方案
 
@@ -15,22 +15,38 @@
 
 ### 1. 环境依赖
 - Python 3.8+
-- PaddlePaddle 2.x
-- PaddleNLP
+- PyTorch 2.0+
+- Transformers 4.30+
 - pandas, scikit-learn, tqdm
 
-### 2. 模型训练
-使用 `src/train_paddle_optm.py` 启动训练。默认使用 GPU 运行，并开启 AMP 混合精度加速。
+### 2. 环境配置
+使用虚拟环境配置依赖：
 ```bash
-python src/train_paddle_optm.py --device gpu --batch_size 32 --epoch 10 --max_length 64
+# 创建虚拟环境
+python -m venv .venv
+
+# 激活虚拟环境
+# Windows:
+.venv\Scripts\activate
+# Linux/Mac:
+source .venv/bin/activate
+
+# 安装依赖
+pip install -r requirements.txt
+```
+
+### 3. 模型训练
+使用 `src/train_torch.py` 启动训练。默认使用 GPU 运行，并开启 AMP 混合精度加速。
+```bash
+python src/train_torch.py --device cuda --batch_size 32 --epoch 10 --max_length 64
 ```
 训练产出的模型将保存在 `./cpa_output/cpa_YYYYMMDD_HHMMSS/` 目录下。
 
-### 3. 模型推理
+### 4. 模型推理
 推理时需指定训练产出的路径和标签文件：
 ```bash
-python src/infer_paddle_optm.py \
-  --model_path ./cpa_output/cpa_TIMESTAMP/best_model.pdparams \
+python src/infer_torch.py \
+  --model_path ./cpa_output/cpa_TIMESTAMP/best_model.pth \
   --labels_path ./cpa_output/cpa_TIMESTAMP/label_classes.txt \
   --input_csv ./dataset/test.csv \
   --output_file ./result/submission.csv
@@ -42,10 +58,11 @@ SCNU_AI_Competition_2026/
 ├── baseline/               # 原始 Baseline 代码
 ├── dataset/                # 数据存放 (Train_Set/ , test.csv)
 ├── src/                    # 核心优化代码
-│   ├── train_paddle_optm.py # 训练脚本 (Mean-Pooling + FGM + Weighted Loss)
-│   └── infer_paddle_optm.py # 推理脚本
+│   ├── train_torch.py       # 训练脚本 (Mean-Pooling + FGM + Weighted Loss)
+│   └── infer_torch.py       # 推理脚本
 ├── cpa_output/             # 模型输出 (日志、权重、标签表)
-└── result/                 # 预测结果 (submission.csv)
+├── result/                 # 预测结果 (submission.csv)
+└── requirements.txt        # 项目依赖
 ```
 
 ---
