@@ -1,6 +1,7 @@
 # 忽略根目录下的文件夹
 /dataset/
 /model/
+/cpa_output/
 
 # 临时文件、系统文件
 *.pyc
