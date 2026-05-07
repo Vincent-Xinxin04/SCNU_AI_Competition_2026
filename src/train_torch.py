@@ -12,8 +12,31 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
+import torch.nn.functional as F
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from sklearn.model_selection import train_test_split
+
+# Focal Loss
+class FocalLoss(nn.Module):
+    def __init__(self, weight=None, gamma=2.0, reduction='mean', label_smoothing=0.0):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.reduction = reduction
+        self.weight = weight
+        self.label_smoothing = label_smoothing
+
+    def forward(self, inputs, targets):
+        ce_loss = F.cross_entropy(inputs, targets, weight=self.weight, 
+                                 reduction='none', label_smoothing=self.label_smoothing)
+        pt = torch.exp(-ce_loss)
+        focal_loss = ((1 - pt) ** self.gamma * ce_loss)
+        
+        if self.reduction == 'mean':
+            return focal_loss.mean()
+        elif self.reduction == 'sum':
+            return focal_loss.sum()
+        else:
+            return focal_loss
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel, get_linear_schedule_with_warmup
@@ -97,34 +120,67 @@ def encode_pair(tokenizer, text_a, text_b, max_length):
 
 # dataset
 class RelationDataset(Dataset):
-    def __init__(self, dataframe, tokenizer, label_encoder, max_length=128):
-        self.data = dataframe.reset_index(drop=True)
-        self.tokenizer = tokenizer
-        self.le = label_encoder
+    def __init__(self, dataframe, tokenizer, label_encoder, max_length=64, augment=False):
+        self.augment = augment
         self.max_length = max_length
+        
+        # Pre-process Subject and Object columns
+        subject_col, object_col = None, None
+        for col in dataframe.columns:
+            if col.lower() == 'subject': subject_col = col
+            elif col.lower() == 'object': object_col = col
+        
+        subjects = dataframe[subject_col].astype(str).tolist()
+        objects = dataframe[object_col].astype(str).tolist()
+        self.labels = label_encoder.transform(dataframe['label']).astype('int64').tolist()
 
-        self.subject_col = None
-        self.object_col = None
-        for col in self.data.columns:
-            if col.lower() == 'subject':
-                self.subject_col = col
-            elif col.lower() == 'object':
-                self.object_col = col
+        logging.info(f"Pre-tokenizing {len(subjects)} samples...")
+        # Use batch encoding for massive speedup
+        encodings = tokenizer(
+            text=subjects,
+            text_pair=objects,
+            max_length=max_length,
+            padding='max_length',
+            truncation=True,
+            return_attention_mask=True,
+            return_tensors=None
+        )
+        self.input_ids = encodings['input_ids']
+        self.attention_masks = encodings['attention_mask']
+        self.cls_token_id = tokenizer.cls_token_id
+        self.sep_token_id = tokenizer.sep_token_id
+        self.pad_token_id = tokenizer.pad_token_id
 
     def __len__(self):
-        return len(self.data)
+        return len(self.labels)
+
+    def _apply_token_augmentation(self, input_ids):
+        # Faster augmentation directly on token IDs
+        input_ids = list(input_ids)
+        length = len(input_ids)
+        
+        # Randomly delete non-special tokens
+        if random.random() < 0.1:
+            # Keep [CLS] and [SEP], delete one random token
+            idx = random.randint(1, length - 2)
+            if input_ids[idx] not in [self.cls_token_id, self.sep_token_id, self.pad_token_id]:
+                input_ids.pop(idx)
+                input_ids.append(self.pad_token_id)
+        
+        return np.array(input_ids, dtype='int64')
 
     def __getitem__(self, idx):
-        row = self.data.iloc[idx]
-        subject_text = str(row[self.subject_col])
-        object_text = str(row[self.object_col])
-        input_ids, attention_mask = encode_pair(self.tokenizer, subject_text, object_text, self.max_length)
-        label_id = self.le.transform([row['label']])[0]
+        input_ids = np.array(self.input_ids[idx], dtype='int64')
+        attention_mask = np.array(self.attention_masks[idx], dtype='int64')
+        
+        if self.augment:
+            input_ids = self._apply_token_augmentation(input_ids)
+            
         return {
             'valid': True,
             'token_ids': input_ids,
             'cls_mask': attention_mask,
-            'label_id': np.int64(label_id),
+            'label_id': self.labels[idx],
         }
 
 
@@ -156,6 +212,22 @@ class CPAModel(nn.Module):
         logits = self.classifier(self.dropout(cls_embedding))
         return logits
 
+
+def compute_kl_loss(p, q, pad_mask=None):
+    p_loss = F.kl_div(F.log_softmax(p, dim=-1), F.softmax(q, dim=-1), reduction='none')
+    q_loss = F.kl_div(F.log_softmax(q, dim=-1), F.softmax(p, dim=-1), reduction='none')
+    
+    # pad_mask can be used to ignore certain samples if needed
+    if pad_mask is not None:
+        p_loss.masked_fill_(~pad_mask, 0.)
+        q_loss.masked_fill_(~pad_mask, 0.)
+
+    # Normalized by batch size to be consistent with mean CE loss
+    p_loss = p_loss.sum() / p.size(0)
+    q_loss = q_loss.sum() / q.size(0)
+
+    loss = (p_loss + q_loss) / 2
+    return loss
 
 # seed
 def set_seed(seed):
@@ -225,6 +297,23 @@ def run_training(args):
 
     # 3. split dataset
     counts = raw_train_df['label'].value_counts()
+    
+    # Calculate competition weights
+    counts_max = counts.max()
+    counts_min = counts.min()
+    m_weights_dict = {}
+    for label, count in counts.items():
+        weight = (counts_max - count + counts_min * 0.1) / (counts_max + counts_min * 0.1)
+        m_weights_dict[label] = weight
+    
+    # Create weight tensor for loss function
+    class_weights = torch.zeros(num_classes)
+    for label, weight in m_weights_dict.items():
+        class_idx = label_encoder.transform([label])[0]
+        class_weights[class_idx] = weight
+    class_weights = class_weights.to(device)
+    logging.info("Calculated few-shot importance weights for loss function.")
+
     rare_labels = counts[counts < 2].index
     df_rare = raw_train_df[raw_train_df['label'].isin(rare_labels)]
     df_common = raw_train_df[~raw_train_df['label'].isin(rare_labels)]
@@ -239,15 +328,50 @@ def run_training(args):
         random_state=args.random_seed,
     )
     train_df = pd.concat([train_c, df_rare]).sample(frac=1, random_state=args.random_seed).reset_index(drop=True)
+    
+    # Oversampling rare classes if specified
+    if args.oversample_rare:
+        logging.info("Oversampling rare classes...")
+        # Define 'rare' as classes with fewer than a certain threshold, e.g., median count or a fixed number
+        threshold = counts.median()
+        rare_to_oversample = counts[counts < threshold].index
+        
+        oversampled_parts = []
+        for label in rare_to_oversample:
+            label_df = train_df[train_df['label'] == label]
+            if len(label_df) == 0: continue
+            # Duplicate up to the threshold (or at least 5 times if very rare)
+            num_repeats = int(max(2, threshold // len(label_df)))
+            oversampled_parts.append(pd.concat([label_df] * num_repeats))
+        
+        if oversampled_parts:
+            train_df = pd.concat([train_df] + oversampled_parts).sample(frac=1, random_state=args.random_seed).reset_index(drop=True)
+            logging.info(f"Oversampling complete. New train size: {len(train_df)}")
+
     val_df = val_c.reset_index(drop=True)
     logging.info(f'split success: train={len(train_df)}, val={len(val_df)}')
 
     # 4. Tokenizer & DataLoader
     tokenizer = AutoTokenizer.from_pretrained(args.shortcut_name)
+    
+    train_dataset = RelationDataset(train_df, tokenizer, label_encoder, args.max_length, augment=args.use_augmentation)
+    
+    sampler = None
+    if args.use_balanced_sampler:
+        logging.info("Using WeightedRandomSampler for class balancing...")
+        class_sample_counts = train_df['label'].value_counts()
+        # Weight for each class is 1/count
+        weights = 1.0 / class_sample_counts
+        # Weight for each sample is the weight of its class
+        sample_weights = train_df['label'].map(weights).values
+        sample_weights = torch.from_numpy(sample_weights)
+        sampler = WeightedRandomSampler(sample_weights, len(sample_weights))
+    
     train_loader = DataLoader(
-        RelationDataset(train_df, tokenizer, label_encoder, args.max_length),
+        train_dataset,
         batch_size=args.batch_size,
-        shuffle=True,
+        shuffle=(sampler is None),
+        sampler=sampler,
         collate_fn=dynamic_collate_fn,
         num_workers=args.num_workers,
     )
@@ -270,7 +394,18 @@ def run_training(args):
         num_warmup_steps=int(total_steps * args.warmup_ratio),
         num_training_steps=total_steps
     )
-    loss_fn = nn.CrossEntropyLoss()
+    
+    # Use specialized loss if specified
+    if args.use_focal_loss:
+        logging.info("Using FocalLoss to handle class imbalance.")
+        loss_fn = FocalLoss(weight=class_weights if args.use_weighted_loss else None, 
+                           gamma=args.focal_gamma, 
+                           label_smoothing=args.label_smoothing)
+    elif args.use_weighted_loss:
+        logging.info("Using weighted CrossEntropyLoss based on few-shot importance.")
+        loss_fn = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=args.label_smoothing)
+    else:
+        loss_fn = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
 
     use_amp = args.use_amp and device.type != 'cpu'
     scaler = torch.cuda.amp.GradScaler() if use_amp else None
@@ -299,14 +434,37 @@ def run_training(args):
 
             if use_amp:
                 with torch.cuda.amp.autocast():
-                    logits = model(input_ids, mask)
-                    loss = loss_fn(logits, label_ids)
+                    if args.use_rdrop:
+                        # Concatenate inputs for a single forward pass (much faster)
+                        input_ids_double = torch.cat([input_ids, input_ids], dim=0)
+                        mask_double = torch.cat([mask, mask], dim=0)
+                        logits_all = model(input_ids_double, mask_double)
+                        logits, logits2 = torch.split(logits_all, input_ids.size(0))
+                        
+                        ce_loss = 0.5 * (loss_fn(logits, label_ids) + loss_fn(logits2, label_ids))
+                        kl_loss = compute_kl_loss(logits, logits2)
+                        loss = ce_loss + args.rdrop_alpha * kl_loss
+                    else:
+                        logits = model(input_ids, mask)
+                        loss = loss_fn(logits, label_ids)
+                        
                 scaler.scale(loss).backward()
                 scaler.step(optimizer)
                 scaler.update()
             else:
-                logits = model(input_ids, mask)
-                loss = loss_fn(logits, label_ids)
+                if args.use_rdrop:
+                    input_ids_double = torch.cat([input_ids, input_ids], dim=0)
+                    mask_double = torch.cat([mask, mask], dim=0)
+                    logits_all = model(input_ids_double, mask_double)
+                    logits, logits2 = torch.split(logits_all, input_ids.size(0))
+                    
+                    ce_loss = 0.5 * (loss_fn(logits, label_ids) + loss_fn(logits2, label_ids))
+                    kl_loss = compute_kl_loss(logits, logits2)
+                    loss = ce_loss + args.rdrop_alpha * kl_loss
+                else:
+                    logits = model(input_ids, mask)
+                    loss = loss_fn(logits, label_ids)
+                    
                 loss.backward()
                 optimizer.step()
 
@@ -363,7 +521,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--epoch', type=int, default=20)
     parser.add_argument('--lr', type=float, default=5e-5)
-    parser.add_argument('--max_length', type=int, default=128)
+    parser.add_argument('--max_length', type=int, default=64)
     parser.add_argument('--random_seed', type=int, default=42)
     parser.add_argument('--num_workers', type=int, default=0)
     parser.add_argument('--use_amp', action='store_true')
@@ -371,5 +529,14 @@ if __name__ == '__main__':
     parser.add_argument('--patience', type=int, default=3)
     parser.add_argument('--val_ratio', type=float, default=0.1)
     parser.add_argument('--device', type=str, default='cuda')
+    parser.add_argument('--use_weighted_loss', action='store_true', help='Use weighted loss based on competition importance')
+    parser.add_argument('--oversample_rare', action='store_true', help='Oversample rare classes in training set')
+    parser.add_argument('--use_augmentation', action='store_true', help='Use simple text augmentation')
+    parser.add_argument('--label_smoothing', type=float, default=0.1)
+    parser.add_argument('--use_balanced_sampler', action='store_true', help='Use WeightedRandomSampler for class balancing')
+    parser.add_argument('--use_focal_loss', action='store_true', help='Use FocalLoss for class imbalance')
+    parser.add_argument('--focal_gamma', type=float, default=2.0, help='Gamma for FocalLoss')
+    parser.add_argument('--use_rdrop', action='store_true', help='Use R-Drop regularization')
+    parser.add_argument('--rdrop_alpha', type=float, default=4.0, help='Weight for KL loss in R-Drop')
     args = parser.parse_args()
     run_training(args)
