@@ -1,15 +1,28 @@
 # SCNU AI Competition 2026 - 表格语义关系提取
 
-本项目旨在实现对表格列对（Subject, Object）之间语义关系的精准提取。模型基于 **PyTorch** 框架开发，针对赛题的长尾分布和少样本（Few-Shot）评估标准进行了专项优化。
+本项目旨在实现对表格列对（Subject, Object）之间语义关系的精准提取。项目提供了基于 **PyTorch** 框架实现的训练与推理代码，且在逻辑上与官方提供的 PaddlePaddle Baseline 完全对齐。
 
-## 核心优化方案
+## 项目特点
 
-我们通过在 `src/` 目录下复现的最优版本，实现了以下核心技术点：
+本项目在 `src/` 目录下复现了 Baseline 的核心逻辑，并将其迁移至 PyTorch 框架：
 
-- **Mean-Pooling (平均池化)**：通过对 Transformer 输出的序列向量进行按掩码平均，相比传统的 CLS 向量，能够更稳健地表征表格单元格的短文本语义。
-- **FGM 对抗训练 (Adversarial Training)**：在 Embedding 层通过添加微小扰动进行对抗攻击（ε=1.0），显著提升了模型的泛化能力和对噪声的抵抗力。
-- **动态加权损失函数 (Weighted CrossEntropy)**：严格遵循赛题 `question.md` 中的 $m_{weights}$ 公式，根据样本量自动调整 Loss 权重，使模型在评估高分值的少样本类别时具有更高的准确度。
-- **Score_final 指标对齐**：验证环节直接采用赛题要求的加权评分标准进行模型筛选，确保训练产出的 `best_model` 即为评分最高版本。
+- **框架迁移**：使用 PyTorch 和 Hugging Face `transformers` 库，替代了原始的 PaddlePaddle 和 PaddleNLP 实现。
+- **逻辑对齐**：
+    - **Pooling 策略**：采用 `CLS token` 作为序列的全局表示，与 Baseline 保持一致。
+    - **损失函数**：使用标准交叉熵损失（`CrossEntropyLoss`）。
+    - **评估指标**：使用标准准确率（Accuracy）进行模型评估与筛选。
+    - **输入处理**：支持 (Subject, Object) 双输入拼接，自动处理 [SEP] 分隔符。
+- **训练优化**：
+    - **混合精度训练 (AMP)**：支持自动混合精度训练，显著提升训练速度并降低显存占用。
+    - **学习率调度**：集成 Linear Decay with Warmup 调度器，优化模型收敛过程。
+    - **早停机制**：内置 Early Stopping，防止模型过拟合。
+
+## 数据集分析
+
+训练集包含 39233 个样本，563 个类别，分布极不均衡：
+- 最多样本类别："instance of"（4681 样本）
+- 最少样本类别：仅 1 个样本
+- 平均每类样本：约 69.7 个
 
 ## 运行指南
 
@@ -35,56 +48,47 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. 数据预处理（可选，推荐）
-先运行预处理脚本生成缓存，加速后续训练：
+### 3. 模型训练
+
+使用 `src/train_torch.py` 进行模型训练。该脚本已与 Baseline 对齐：
+
 ```bash
-python src/preprocess_data.py --max_length 64
-```
-预处理后的缓存保存在 `./dataset/cache/` 目录下。如需强制重建缓存：
-```bash
-python src/preprocess_data.py --max_length 64 --force_rebuild
+python src/train_torch.py --device cuda --batch_size 32 --epoch 20 --max_length 128 --use_amp --shortcut_name bert-base-uncased
 ```
 
-### 4. 模型训练
-使用 `src/train_torch.py` 启动训练。默认使用 GPU 运行，并开启 AMP 混合精度加速。
-```bash
-python src/train_torch.py --device cuda --batch_size 32 --epoch 10 --max_length 64 --use_amp
-```
 训练产出的模型将保存在 `./cpa_output/cpa_YYYYMMDD_HHMMSS/` 目录下。
 
 主要参数说明：
+- `--train_dir`: 训练数据集目录
 - `--device`: 设备选择 (cuda/cpu)
-- `--batch_size`: 批次大小
-- `--epoch`: 训练轮数
-- `--max_length`: 序列最大长度
-- `--use_amp`: 开启混合精度训练（推荐）
-- `--num_workers`: 数据加载进程数（默认 0，表示主进程加载）
-- `--force_rebuild_cache`: 强制重建数据缓存
+- `--batch_size`: 批次大小 (默认 32)
+- `--epoch`: 训练轮数 (默认 20)
+- `--lr`: 学习率 (默认 5e-5)
+- `--max_length`: 序列最大长度 (默认 128)
+- `--use_amp`: 开启混合精度训练
+- `--patience`: 早停 patience (默认 3)
 
-### 5. 模型推理
-推理时需指定训练产出的路径和标签文件：
+### 4. 模型推理
+
+使用 `src/infer_torch.py` 进行推理并生成提交文件：
+
 ```bash
-python src/infer_torch.py \
-  --model_path ./cpa_output/cpa_TIMESTAMP/best_model.pth \
-  --labels_path ./cpa_output/cpa_TIMESTAMP/label_classes.txt \
-  --input_csv ./dataset/test.csv \
-  --output_file ./result/submission.csv
+python src/infer_torch.py --model_path ./cpa_output/cpa_TIMESTAMP/best_model.pth --labels_path ./cpa_output/cpa_TIMESTAMP/label_classes.txt --input_csv ./dataset/test.csv --output_file ./result/submission.csv
 ```
 
 ## 目录结构
 ```text
 SCNU_AI_Competition_2026/
-├── baseline/               # 原始 Baseline 代码
+├── baseline/               # 官方原始 PaddlePaddle Baseline 代码
 ├── dataset/                # 数据存放 (Train_Set/ , test.csv)
-│   └── cache/              # 预处理数据缓存（自动生成）
-├── src/                    # 核心优化代码
-│   ├── preprocess_data.py  # 数据预处理脚本
-│   ├── train_torch.py      # 训练脚本 (Mean-Pooling + FGM + Weighted Loss)
-│   └── infer_torch.py      # 推理脚本
+├── src/                    # PyTorch 实现代码
+│   ├── train_torch.py      # 训练脚本 (与 Baseline 逻辑对齐)
+│   ├── infer_torch.py      # 推理脚本 (与 Baseline 逻辑对齐)
+│   └── preprocess_data.py  # 数据预处理辅助脚本
 ├── cpa_output/             # 模型输出 (日志、权重、标签表)
 ├── result/                 # 预测结果 (submission.csv)
 └── requirements.txt        # 项目依赖
 ```
 
 ---
-*本项目完全遵循 SCNU AI Competition 2026 的评价指标体系，旨在提供一个高性能且易于复现的解决方案。*
+*本项目提供的 PyTorch 实现版本完全遵循 SCNU AI Competition 2026 的评价标准，确保了与 Baseline 的一致性与可复现性。*

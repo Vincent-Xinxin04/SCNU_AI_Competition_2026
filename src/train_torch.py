@@ -19,16 +19,13 @@ from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel, get_linear_schedule_with_warmup
 
 
+# data load
 def load_data_from_directory(dir_path):
     all_data = []
     if not os.path.exists(dir_path):
         raise ValueError(f"can't find: {dir_path}")
 
-    try:
-        csv_files = [f for f in os.listdir(dir_path) if f.endswith('.csv')]
-    except PermissionError:
-        logging.error(f"Permission denied: {dir_path}")
-        return []
+    csv_files = [f for f in os.listdir(dir_path) if f.endswith('.csv')]
     logging.info(f"load data from {dir_path} ...")
 
     for filename in tqdm(csv_files, desc=f"loading {os.path.basename(dir_path)}"):
@@ -40,6 +37,7 @@ def load_data_from_directory(dir_path):
                 continue
             df.columns = [str(col).strip() for col in df.columns]
             
+            # Locate Subject and Object columns in a case-insensitive way.
             subject_col = None
             object_col = None
             for col in df.columns:
@@ -60,6 +58,7 @@ def load_data_from_directory(dir_path):
 
     full_df = pd.concat(all_data, ignore_index=True)
     
+    # Re-find columns after concat
     subject_col = None
     object_col = None
     for col in full_df.columns:
@@ -67,12 +66,13 @@ def load_data_from_directory(dir_path):
             subject_col = col
         elif col.lower() == 'object':
             object_col = col
-    
+            
     full_df[subject_col] = full_df[subject_col].astype(str)
     full_df[object_col] = full_df[object_col].astype(str)
     return full_df
 
 
+# encode data
 def encode_pair(tokenizer, text_a, text_b, max_length):
     encoding = tokenizer(
         text=text_a,
@@ -95,73 +95,7 @@ def encode_pair(tokenizer, text_a, text_b, max_length):
     return np.array(input_ids, dtype='int64'), np.array(attention_mask, dtype='int64')
 
 
-def preprocess_and_cache_data(dataframe, tokenizer, label_encoder, max_length, cache_dir, cache_name, force_rebuild=False):
-    """
-    预处理数据并保存到缓存文件
-    """
-    os.makedirs(cache_dir, exist_ok=True)
-    cache_path = os.path.join(cache_dir, f'{cache_name}.npz')
-    
-    # 检查缓存是否存在
-    if not force_rebuild and os.path.exists(cache_path):
-        logging.info(f'Loading cached data from {cache_path}')
-        cached = np.load(cache_path, allow_pickle=True)
-        return cached['input_ids'], cached['attention_mask'], cached['labels']
-    
-    # 预处理数据
-    logging.info(f'Preprocessing data and saving to {cache_path}')
-    subject_col = None
-    object_col = None
-    for col in dataframe.columns:
-        if col.lower() == 'subject':
-            subject_col = col
-        elif col.lower() == 'object':
-            object_col = col
-    
-    input_ids_list = []
-    attention_mask_list = []
-    labels_list = []
-    
-    for idx, row in tqdm(dataframe.iterrows(), total=len(dataframe), desc='Preprocessing'):
-        subject_text = str(row[subject_col])
-        object_text = str(row[object_col])
-        input_ids, attention_mask = encode_pair(tokenizer, subject_text, object_text, max_length)
-        label_id = label_encoder.transform([row['label']])[0]
-        
-        input_ids_list.append(input_ids)
-        attention_mask_list.append(attention_mask)
-        labels_list.append(np.int64(label_id))
-    
-    # 保存到缓存
-    np.savez_compressed(
-        cache_path,
-        input_ids=np.array(input_ids_list),
-        attention_mask=np.array(attention_mask_list),
-        labels=np.array(labels_list)
-    )
-    logging.info(f'Data cached successfully to {cache_path}')
-    
-    return np.array(input_ids_list), np.array(attention_mask_list), np.array(labels_list)
-
-
-class CachedRelationDataset(Dataset):
-    def __init__(self, input_ids, attention_mask, labels):
-        self.input_ids = input_ids
-        self.attention_mask = attention_mask
-        self.labels = labels
-
-    def __len__(self):
-        return len(self.input_ids)
-
-    def __getitem__(self, idx):
-        return {
-            'valid': True,
-            'token_ids': self.input_ids[idx],
-            'cls_mask': self.attention_mask[idx],
-            'label_id': self.labels[idx],
-        }
-
-
+# dataset
 class RelationDataset(Dataset):
     def __init__(self, dataframe, tokenizer, label_encoder, max_length=128):
         self.data = dataframe.reset_index(drop=True)
@@ -206,52 +140,24 @@ def dynamic_collate_fn(samples):
     }
 
 
+# model
 class CPAModel(nn.Module):
-    def __init__(self, shortcut_name, num_classes, hidden_size=None):
+    def __init__(self, shortcut_name, num_classes):
         super(CPAModel, self).__init__()
         self.encoder = AutoModel.from_pretrained(shortcut_name)
-        if hidden_size is None:
-            self.hidden_size = self.encoder.config.hidden_size
-        else:
-            self.hidden_size = hidden_size
-        self.classifier = nn.Linear(self.hidden_size, num_classes)
+        hidden_size = self.encoder.config.hidden_size
+        self.classifier = nn.Linear(hidden_size, num_classes)
         self.dropout = nn.Dropout(0.1)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
-        seq_output = outputs.last_hidden_state
-        mask = attention_mask.float().unsqueeze(-1)
-        sum_embeddings = torch.sum(seq_output * mask, dim=1)
-        sum_mask = torch.sum(mask, dim=1)
-        mean_pooled = sum_embeddings / sum_mask
-        
-        logits = self.classifier(self.dropout(mean_pooled))
+        # Use CLS token pooling to align with baseline
+        cls_embedding = outputs.last_hidden_state[:, 0, :]
+        logits = self.classifier(self.dropout(cls_embedding))
         return logits
 
 
-class FGM():
-    def __init__(self, model):
-        self.model = model
-        self.backup = {}
-
-    def attack(self, epsilon=1.0, emb_name='word_embeddings'):
-        for name, param in self.model.named_parameters():
-            if param.requires_grad and emb_name in name:
-                self.backup[name] = param.data.clone()
-                if param.grad is not None:
-                    norm = torch.norm(param.grad)
-                    if norm > 0 and not torch.isnan(norm):
-                        r_at = epsilon * param.grad / norm
-                        param.data.add_(r_at)
-
-    def restore(self, emb_name='word_embeddings'):
-        for name, param in self.model.named_parameters():
-            if param.requires_grad and emb_name in name:
-                assert name in self.backup
-                param.data.copy_(self.backup[name])
-        self.backup = {}
-
-
+# seed
 def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
@@ -260,6 +166,7 @@ def set_seed(seed):
         torch.cuda.manual_seed_all(seed)
 
 
+# log
 def setup_logging(save_dir):
     os.makedirs(save_dir, exist_ok=True)
     logging.basicConfig(
@@ -272,6 +179,7 @@ def setup_logging(save_dir):
     )
 
 
+# device
 def resolve_device(device_arg):
     if device_arg and 'cuda' in device_arg and torch.cuda.is_available():
         device = torch.device(device_arg)
@@ -287,6 +195,7 @@ def resolve_device(device_arg):
         return device
 
 
+# labels
 def save_label_classes(label_encoder, save_dir):
     path = os.path.join(save_dir, 'label_classes.txt')
     with open(path, 'w', encoding='utf-8') as f:
@@ -294,18 +203,7 @@ def save_label_classes(label_encoder, save_dir):
             f.write(f'{label}\n')
 
 
-def calculate_few_shot_weights(counts_dict, label_encoder, device):
-    counts = np.array([counts_dict.get(label, 1) for label in label_encoder.classes_], dtype=np.float32)
-    c_max = np.max(counts)
-    c_min = np.min(counts)
-    
-    weights = (c_max - counts + c_min * 0.1) / (c_max + c_min * 0.1)
-    
-    weights = weights * 0.8 + 0.2 * np.ones_like(weights)
-    
-    return torch.tensor(weights, dtype=torch.float32, device=device)
-
-
+# train
 def run_training(args):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     save_dir = os.path.join(args.output_dir, f'cpa_{timestamp}')
@@ -315,18 +213,17 @@ def run_training(args):
 
     logging.info(f'device: {device}')
 
+    # 1. load train data
     raw_train_df = load_data_from_directory(args.train_dir)
 
+    # 2. build label
     label_encoder = LabelEncoder()
     label_encoder.fit(raw_train_df['label'].unique())
     num_classes = len(label_encoder.classes_)
     logging.info(f'label_num: {num_classes}')
     save_label_classes(label_encoder, save_dir)
-    
-    label_counts = raw_train_df['label'].value_counts().to_dict()
-    class_weights = calculate_few_shot_weights(label_counts, label_encoder, device)
-    logging.info("few-shot weights calculated and applied to Loss function.")
 
+    # 3. split dataset
     counts = raw_train_df['label'].value_counts()
     rare_labels = counts[counts < 2].index
     df_rare = raw_train_df[raw_train_df['label'].isin(rare_labels)]
@@ -345,60 +242,41 @@ def run_training(args):
     val_df = val_c.reset_index(drop=True)
     logging.info(f'split success: train={len(train_df)}, val={len(val_df)}')
 
+    # 4. Tokenizer & DataLoader
     tokenizer = AutoTokenizer.from_pretrained(args.shortcut_name)
-    
-    # 设置缓存目录
-    cache_dir = os.path.join(os.path.dirname(args.train_dir), 'cache')
-    cache_suffix = f'{args.shortcut_name.replace("/", "_")}_len{args.max_length}'
-    
-    # 预处理并缓存训练集和验证集
-    train_input_ids, train_attention_mask, train_labels = preprocess_and_cache_data(
-        train_df, tokenizer, label_encoder, args.max_length, 
-        cache_dir, f'train_{cache_suffix}', args.force_rebuild_cache
-    )
-    val_input_ids, val_attention_mask, val_labels = preprocess_and_cache_data(
-        val_df, tokenizer, label_encoder, args.max_length, 
-        cache_dir, f'val_{cache_suffix}', args.force_rebuild_cache
-    )
-    
-    # 使用缓存的数据集
-    train_dataset = CachedRelationDataset(train_input_ids, train_attention_mask, train_labels)
     train_loader = DataLoader(
-        train_dataset,
+        RelationDataset(train_df, tokenizer, label_encoder, args.max_length),
         batch_size=args.batch_size,
         shuffle=True,
         collate_fn=dynamic_collate_fn,
         num_workers=args.num_workers,
     )
-    
-    val_dataset = CachedRelationDataset(val_input_ids, val_attention_mask, val_labels)
     val_loader = DataLoader(
-        val_dataset,
+        RelationDataset(val_df, tokenizer, label_encoder, args.max_length),
         batch_size=args.batch_size,
         shuffle=False,
         collate_fn=dynamic_collate_fn,
         num_workers=args.num_workers,
     )
 
+    # 5. model init
     model = CPAModel(args.shortcut_name, num_classes)
     model.to(device)
     
     total_steps = max(1, len(train_loader) * args.epoch)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
     lr_scheduler = get_linear_schedule_with_warmup(
         optimizer,
         num_warmup_steps=int(total_steps * args.warmup_ratio),
         num_training_steps=total_steps
     )
-    
-    loss_fn = nn.CrossEntropyLoss(weight=class_weights)
-    
-    fgm = FGM(model)
+    loss_fn = nn.CrossEntropyLoss()
 
     use_amp = args.use_amp and device.type != 'cpu'
     scaler = torch.cuda.amp.GradScaler() if use_amp else None
 
-    best_final_score = 0.0
+    # 6. training
+    best_acc = 0.0
     patience_counter = 0
     patience_limit = args.patience
 
@@ -414,84 +292,59 @@ def run_training(args):
                 continue
 
             input_ids = torch.tensor(batch['data'], dtype=torch.long, device=device)
-            attention_mask = torch.tensor(batch['cls_mask'], dtype=torch.long, device=device)
+            mask = torch.tensor(batch['cls_mask'], dtype=torch.long, device=device)
             label_ids = torch.tensor(batch['label'], dtype=torch.long, device=device)
 
             optimizer.zero_grad()
 
             if use_amp:
                 with torch.cuda.amp.autocast():
-                    logits = model(input_ids, attention_mask)
+                    logits = model(input_ids, mask)
                     loss = loss_fn(logits, label_ids)
                 scaler.scale(loss).backward()
-                
-                fgm.attack(epsilon=args.fgm_epsilon)
-                with torch.cuda.amp.autocast():
-                    logits_adv = model(input_ids, attention_mask)
-                    loss_adv = loss_fn(logits_adv, label_ids)
-                scaler.scale(loss_adv).backward()
-                fgm.restore()
-                
                 scaler.step(optimizer)
                 scaler.update()
             else:
-                logits = model(input_ids, attention_mask)
+                logits = model(input_ids, mask)
                 loss = loss_fn(logits, label_ids)
                 loss.backward()
-                
-                fgm.attack(epsilon=args.fgm_epsilon)
-                logits_adv = model(input_ids, attention_mask)
-                loss_adv = loss_fn(logits_adv, label_ids)
-                loss_adv.backward()
-                fgm.restore()
-                
                 optimizer.step()
 
             lr_scheduler.step()
-            optimizer.zero_grad()
             loss_value = loss.item()
             tr_loss += loss_value
             train_steps += 1
             pbar.set_postfix({'loss': f'{loss_value:.4f}'})
 
-        m_weights = class_weights.cpu().numpy()
-        m_correct = np.zeros(num_classes)
-        m_total = np.zeros(num_classes)
-        
+        # val stage
         model.eval()
+        val_correct, val_total = 0, 0
         with torch.no_grad():
             for batch in val_loader:
                 if batch is None:
                     continue
                 input_ids = torch.tensor(batch['data'], dtype=torch.long, device=device)
-                attention_mask = torch.tensor(batch['cls_mask'], dtype=torch.long, device=device)
-                label_ids = batch['label']
+                mask = torch.tensor(batch['cls_mask'], dtype=torch.long, device=device)
+                label_ids = torch.tensor(batch['label'], dtype=torch.long, device=device)
                 
-                logits = model(input_ids, attention_mask)
-                preds = torch.argmax(logits, dim=1).cpu().numpy()
-                labels = label_ids
-                
-                for p, l in zip(preds, labels):
-                    m_total[l] += 1
-                    if p == l:
-                        m_correct[l] += 1
-        
-        m_scores = np.divide(m_correct, m_total, out=np.zeros_like(m_correct), where=m_total!=0)
-        valid_mask = m_total > 0
-        final_score = np.sum(m_weights[valid_mask] * m_scores[valid_mask]) / np.sum(m_weights[valid_mask])
-        
-        val_acc = np.sum(m_correct) / np.sum(m_total) if np.sum(m_total) > 0 else 0.0
-        logging.info(f"Epoch {epoch+1} | Loss: {tr_loss/max(1, train_steps):.4f} | Val Acc: {val_acc:.4f} | Score_final: {final_score:.4f}")
+                logits = model(input_ids, mask)
+                preds = torch.argmax(logits, dim=1)
+                val_correct += (preds == label_ids).sum().item()
+                val_total += label_ids.size(0)
 
-        if final_score > best_final_score:
-            best_final_score = final_score
+        avg_train_loss = tr_loss / max(1, train_steps)
+        val_acc = val_correct / val_total if val_total > 0 else 0.0
+        logging.info(f'Epoch {epoch + 1} | Loss: {avg_train_loss:.4f} | Val Acc: {val_acc:.4f}')
+
+        if val_acc > best_acc:
+            best_acc = val_acc
             patience_counter = 0
-            logging.info(f"best model! (Score_final: {final_score:.4f})")
             torch.save(model.state_dict(), os.path.join(save_dir, 'best_model.pth'))
             try:
                 tokenizer.save_pretrained(save_dir)
             except Exception:
                 pass
+            logging.info(f'best model! (Acc: {best_acc:.4f})')
         else:
             patience_counter += 1
             logging.info(f'early stop count: {patience_counter}/{patience_limit}')
@@ -499,27 +352,24 @@ def run_training(args):
                 logging.info(f'{patience_limit} epoch not up, early stop!!!')
                 break
 
-    logging.info(f'train finish, best score: {best_final_score:.4f}')
+    logging.info(f'train finish, best acc: {best_acc:.4f}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--train_dir', type=str, default="./dataset/Train_Set")
     parser.add_argument('--output_dir', type=str, default='./cpa_output')
-    parser.add_argument('--shortcut_name', type=str, default='bert-base-chinese')
+    parser.add_argument('--shortcut_name', type=str, default='bert-base-uncased')
     parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--epoch', type=int, default=10)
+    parser.add_argument('--epoch', type=int, default=20)
     parser.add_argument('--lr', type=float, default=5e-5)
-    parser.add_argument('--max_length', type=int, default=64)
+    parser.add_argument('--max_length', type=int, default=128)
     parser.add_argument('--random_seed', type=int, default=42)
     parser.add_argument('--num_workers', type=int, default=0)
-    parser.add_argument('--use_flash_attention', action='store_true')
     parser.add_argument('--use_amp', action='store_true')
     parser.add_argument('--warmup_ratio', type=float, default=0.1)
     parser.add_argument('--patience', type=int, default=3)
     parser.add_argument('--val_ratio', type=float, default=0.1)
     parser.add_argument('--device', type=str, default='cuda')
-    parser.add_argument('--fgm_epsilon', type=float, default=1.0)
-    parser.add_argument('--force_rebuild_cache', action='store_true', help='Force rebuild cache even if it exists')
     args = parser.parse_args()
     run_training(args)

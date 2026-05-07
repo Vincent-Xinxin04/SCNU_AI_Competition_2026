@@ -14,29 +14,28 @@ from transformers import AutoTokenizer, AutoModel
 from tqdm import tqdm
 
 
+# ==========================================
+# 1. Model definition (must match training)
+# ==========================================
 class CPAModel(nn.Module):
-    def __init__(self, shortcut_name, num_classes, hidden_size=None):
+    def __init__(self, shortcut_name, num_classes):
         super(CPAModel, self).__init__()
         self.encoder = AutoModel.from_pretrained(shortcut_name)
-        if hidden_size is None:
-            self.hidden_size = self.encoder.config.hidden_size
-        else:
-            self.hidden_size = hidden_size
-        self.classifier = nn.Linear(self.hidden_size, num_classes)
+        hidden_size = self.encoder.config.hidden_size
+        self.classifier = nn.Linear(hidden_size, num_classes)
         self.dropout = nn.Dropout(0.1)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
-        seq_output = outputs.last_hidden_state
-        mask = attention_mask.float().unsqueeze(-1)
-        sum_embeddings = torch.sum(seq_output * mask, dim=1)
-        sum_mask = torch.sum(mask, dim=1)
-        mean_pooled = sum_embeddings / sum_mask
-        
-        logits = self.classifier(self.dropout(mean_pooled))
+        # Use CLS token pooling to align with baseline
+        cls_embedding = outputs.last_hidden_state[:, 0, :]
+        logits = self.classifier(self.dropout(cls_embedding))
         return logits
 
 
+# ==========================================
+# 2. Tokenization helper
+# ==========================================
 def encode_pair(tokenizer, text_a, text_b, max_length):
     encoding = tokenizer(
         text=text_a,
@@ -58,6 +57,9 @@ def encode_pair(tokenizer, text_a, text_b, max_length):
     return np.array(input_ids, dtype='int64'), np.array(attention_mask, dtype='int64')
 
 
+# ==========================================
+# 3. Single-table inference dataset
+# ==========================================
 class SingleTableInferenceDataset(Dataset):
     def __init__(self, csv_path, tokenizer, max_length=128):
         self.tokenizer = tokenizer
@@ -65,10 +67,13 @@ class SingleTableInferenceDataset(Dataset):
         self.samples = []
         self.original_rows = []
 
+        # Read the CSV file.
         df = pd.read_csv(csv_path, low_memory=False, encoding='utf-8-sig')
 
+        # Normalize column names by trimming whitespace.
         df.columns = [str(col).strip() for col in df.columns]
 
+        # Locate Subject and Object columns in a case-insensitive way.
         subject_col = None
         object_col = None
         for col in df.columns:
@@ -80,6 +85,7 @@ class SingleTableInferenceDataset(Dataset):
         if subject_col is None or object_col is None:
             raise ValueError("The CSV file must contain 'Subject' and 'Object' columns (case-insensitive).")
 
+        # Drop rows with missing Subject/Object values.
         temp_df = df[[subject_col, object_col]].dropna()
         for idx, row in temp_df.iterrows():
             self.samples.append((str(row[subject_col]), str(row[object_col])))
@@ -111,14 +117,19 @@ def collate_fn(samples):
     }
 
 
+# ==========================================
+# 4. Inference pipeline
+# ==========================================
 def run_inference(args):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(args.device if torch.cuda.is_available() and 'cuda' in args.device else 'cpu')
     print(f'Using device: {device}')
 
+    # Load label mapping.
     with open(args.labels_path, 'r', encoding='utf-8-sig') as f:
         classes = [line.strip() for line in f.readlines() if line.strip()]
     id2label = {idx: label for idx, label in enumerate(classes)}
 
+    # Initialize tokenizer and model.
     tokenizer = AutoTokenizer.from_pretrained(args.shortcut_name)
     model = CPAModel(args.shortcut_name, len(classes))
 
@@ -130,6 +141,7 @@ def run_inference(args):
     model.to(device)
     model.eval()
 
+    # Load the dataset.
     dataset = SingleTableInferenceDataset(args.input_csv, tokenizer, args.max_length)
     dataloader = DataLoader(
         dataset,
@@ -141,6 +153,7 @@ def run_inference(args):
 
     print(f'Starting inference. Total valid rows: {len(dataset)}')
     predictions = [None] * len(dataset)
+    use_amp = args.use_amp and device.type != 'cpu'
 
     with torch.no_grad():
         for batch in tqdm(dataloader, desc='Running inference'):
@@ -148,13 +161,18 @@ def run_inference(args):
             mask = torch.tensor(batch['attention_mask'], dtype=torch.long, device=device)
             orig_indices = batch['orig_idx'].tolist()
 
-            logits = model(ids, mask)
+            if use_amp:
+                with torch.cuda.amp.autocast():
+                    logits = model(ids, mask)
+            else:
+                logits = model(ids, mask)
 
             preds = torch.argmax(logits, dim=1).cpu().numpy().tolist()
             for idx_in_batch, pred_idx in enumerate(preds):
                 original_position = orig_indices[idx_in_batch]
                 predictions[original_position] = id2label[pred_idx]
 
+    # Reload the original CSV and attach predictions.
     original_df = pd.read_csv(args.input_csv, low_memory=False, encoding='utf-8-sig')
     original_df.columns = [str(col).strip() for col in original_df.columns]
 
@@ -169,6 +187,7 @@ def run_inference(args):
     if subject_col is None or object_col is None:
         raise ValueError("The CSV file must contain 'Subject' and 'Object' columns (case-insensitive).")
 
+    # Only rows with valid Subject/Object pairs receive predictions.
     valid_mask = original_df[subject_col].notna() & original_df[object_col].notna()
     valid_indices = original_df[valid_mask].index.tolist()
 
@@ -176,14 +195,15 @@ def run_inference(args):
     for row_idx, pred_label in zip(valid_indices, predictions):
         original_df.loc[row_idx, 'Label'] = pred_label
 
+    # Save the result without modifying the source file.
     original_df.to_csv(args.output_file, index=False, encoding='utf-8-sig')
     print(f'Inference completed. Results saved to: {args.output_file}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_csv', type=str, default="./dataset/test.csv")
-    parser.add_argument('--labels_path', type=str, default="./dataset/labels.txt")
-    parser.add_argument('--model_path', type=str, default="./cpa_output/cpa_20260430_112547/best_model.pth")
+    parser.add_argument('--input_csv', type=str, default="./test.csv")
+    parser.add_argument('--labels_path', type=str, default="./label_classes.txt")
+    parser.add_argument('--model_path', type=str, default="./cpa_output/best_model.pth")
     parser.add_argument('--output_file', type=str, default='./submission.csv')
     parser.add_argument('--shortcut_name', type=str, default='bert-base-uncased')
     parser.add_argument('--batch_size', type=int, default=256)
