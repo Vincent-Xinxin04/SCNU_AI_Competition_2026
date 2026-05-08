@@ -2,6 +2,11 @@ import argparse
 import os
 import pandas as pd
 import warnings
+import re
+
+# Set Hugging Face Mirror (Allow override via environment variable)
+if "HF_ENDPOINT" not in os.environ:
+    os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -27,7 +32,7 @@ class CPAModel(nn.Module):
 
     def forward(self, input_ids, attention_mask):
         outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
-        # Use CLS token pooling to align with baseline
+        # Use CLS token pooling
         cls_embedding = outputs.last_hidden_state[:, 0, :]
         logits = self.classifier(self.dropout(cls_embedding))
         return logits
@@ -36,7 +41,21 @@ class CPAModel(nn.Module):
 # ==========================================
 # 2. Tokenization helper
 # ==========================================
-def encode_pair(tokenizer, text_a, text_b, max_length):
+def get_type_hint(text):
+    text = str(text)
+    if re.match(r'^-?\d+(\.\d+)?$', text):
+        return "[NUM]"
+    if re.search(r'\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}\s+[A-Za-z]+\s+\d{4}', text):
+        return "[DATE]"
+    if re.search(r'https?://\S+', text):
+        return "[URL]"
+    return "[TXT]"
+
+def encode_pair(tokenizer, text_a, text_b, max_length, use_type_hint=False):
+    if use_type_hint:
+        text_a = f"{get_type_hint(text_a)} {text_a}"
+        text_b = f"{get_type_hint(text_b)} {text_b}"
+        
     encoding = tokenizer(
         text=text_a,
         text_pair=text_b,
@@ -61,9 +80,10 @@ def encode_pair(tokenizer, text_a, text_b, max_length):
 # 3. Single-table inference dataset
 # ==========================================
 class SingleTableInferenceDataset(Dataset):
-    def __init__(self, csv_path, tokenizer, max_length=128):
+    def __init__(self, csv_path, tokenizer, max_length=128, use_type_hint=False):
         self.tokenizer = tokenizer
         self.max_length = max_length
+        self.use_type_hint = use_type_hint
         self.samples = []
         self.original_rows = []
 
@@ -101,6 +121,7 @@ class SingleTableInferenceDataset(Dataset):
             subject_text,
             object_text,
             self.max_length,
+            use_type_hint=self.use_type_hint
         )
         return {
             'input_ids': input_ids,
@@ -142,7 +163,7 @@ def run_inference(args):
     model.eval()
 
     # Load the dataset.
-    dataset = SingleTableInferenceDataset(args.input_csv, tokenizer, args.max_length)
+    dataset = SingleTableInferenceDataset(args.input_csv, tokenizer, args.max_length, use_type_hint=args.use_type_hint)
     dataloader = DataLoader(
         dataset,
         batch_size=args.batch_size,
@@ -201,15 +222,16 @@ def run_inference(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_csv', type=str, default="./test.csv")
-    parser.add_argument('--labels_path', type=str, default="./label_classes.txt")
-    parser.add_argument('--model_path', type=str, default="./cpa_output/best_model.pth")
+    parser.add_argument('--input_csv', type=str, default="./dataset/test.csv")
+    parser.add_argument('--labels_path', type=str, default="./model/label_classes.txt")
+    parser.add_argument('--model_path', type=str, default="./model/best_model.pth")
     parser.add_argument('--output_file', type=str, default='./submission.csv')
     parser.add_argument('--shortcut_name', type=str, default='bert-base-uncased')
-    parser.add_argument('--batch_size', type=int, default=256)
-    parser.add_argument('--max_length', type=int, default=512)
+    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--max_length', type=int, default=64)
     parser.add_argument('--num_workers', type=int, default=0)
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--use_amp', action='store_true')
+    parser.add_argument('--use_type_hint', action='store_true', help='Use data type hinting in features')
     args = parser.parse_args()
     run_inference(args)
