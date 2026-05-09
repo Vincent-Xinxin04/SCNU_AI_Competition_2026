@@ -18,7 +18,6 @@ from transformers import (
     AutoTokenizer, 
     AutoModel, 
     get_linear_schedule_with_warmup,
-    AdamW
 )
 
 
@@ -300,12 +299,25 @@ def run_training(args):
     
     # 4. 分割数据集
     logging.info("Step 4: Splitting dataset...")
-    train_df, val_df = train_test_split(
-        cleaned_train_df,
-        test_size=args.val_ratio,
-        stratify=cleaned_train_df['label'],
-        random_state=args.random_seed,
-    )
+    
+    # 检查是否有类别样本数少于2，如果有则不能使用分层抽样
+    label_counts = cleaned_train_df['label'].value_counts()
+    min_count = label_counts.min()
+    
+    if min_count < 2:
+        logging.warning(f"Found classes with less than 2 samples (min: {min_count}). Using random split instead of stratified split.")
+        train_df, val_df = train_test_split(
+            cleaned_train_df,
+            test_size=args.val_ratio,
+            random_state=args.random_seed,
+        )
+    else:
+        train_df, val_df = train_test_split(
+            cleaned_train_df,
+            test_size=args.val_ratio,
+            stratify=cleaned_train_df['label'],
+            random_state=args.random_seed,
+        )
     
     # 5. Tokenizer & DataLoader
     logging.info("Step 5: Initializing tokenizer and dataloaders...")
@@ -346,7 +358,7 @@ def run_training(args):
     model = CPAModel(args.model_name, num_classes, args.dropout_rate).to(device)
     
     # 优化器和调度器
-    optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     total_steps = len(train_loader) * args.epochs
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
