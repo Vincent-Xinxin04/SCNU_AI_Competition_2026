@@ -2,6 +2,7 @@
 /dataset/
 /model/
 /cpa_output/
+/pretrained_models/
 
 # 临时文件、系统文件
 *.pyc

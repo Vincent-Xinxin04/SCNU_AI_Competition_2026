@@ -1,11 +1,23 @@
+# PyTorch GPU 训练依赖
+# 安装命令: pip install -r requirements.txt
+
+# PyTorch with CUDA 11.8 support
 --extra-index-url https://download.pytorch.org/whl/cu118
 torch>=2.0.0
 torchvision>=0.15.0
-transformers==4.40.0
+torchaudio>=2.0.0
+
+# Hugging Face Transformers
+transformers>=4.30.0
+
+# Data processing
 pandas>=1.5.0
-scikit-learn>=1.0.0
+numpy>=1.24.0
+scikit-learn>=1.2.0
+
+# Utilities
 tqdm>=4.65.0
-numpy>=1.23.0
 sentencepiece>=0.1.99
 protobuf>=3.20.0
 safetensors>=0.4.3
+accelerate>=0.20.0

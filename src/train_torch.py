@@ -2,163 +2,37 @@ import argparse
 import os
 import random
 import logging
-import warnings
-import re
 from datetime import datetime
-
-# Set Hugging Face Mirror (Allow override via environment variable)
-if "HF_ENDPOINT" not in os.environ:
-    os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
-
-warnings.filterwarnings("ignore", category=UserWarning)
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+from collections import defaultdict
 
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
-
-# EMA
-class EMA():
-    def __init__(self, model, decay):
-        self.model = model
-        self.decay = decay
-        self.shadow = {}
-        self.backup = {}
-
-    def register(self):
-        for name, param in self.model.named_parameters():
-            if param.requires_grad:
-                self.shadow[name] = param.data.clone()
-
-    def update(self):
-        for name, param in self.model.named_parameters():
-            if param.requires_grad:
-                assert name in self.shadow
-                new_average = (1.0 - self.decay) * param.data + self.decay * self.shadow[name]
-                self.shadow[name] = new_average.clone()
-
-    def apply_shadow(self):
-        for name, param in self.model.named_parameters():
-            if param.requires_grad:
-                assert name in self.shadow
-                self.backup[name] = param.data.clone()
-                param.data = self.shadow[name]
-
-    def restore(self):
-        for name, param in self.model.named_parameters():
-            if param.requires_grad:
-                assert name in self.backup
-                param.data = self.backup[name]
-        self.backup = {}
-
-# Focal Loss
-class FocalLoss(nn.Module):
-    def __init__(self, weight=None, gamma=2.0, reduction='mean', label_smoothing=0.0):
-        super(FocalLoss, self).__init__()
-        self.gamma = gamma
-        self.reduction = reduction
-        self.weight = weight
-        self.label_smoothing = label_smoothing
-
-    def forward(self, inputs, targets):
-        ce_loss = F.cross_entropy(inputs, targets, weight=self.weight, 
-                                 reduction='none', label_smoothing=self.label_smoothing)
-        pt = torch.exp(-ce_loss)
-        focal_loss = ((1 - pt) ** self.gamma * ce_loss)
-        
-        if self.reduction == 'mean':
-            return focal_loss.mean()
-        elif self.reduction == 'sum':
-            return focal_loss.sum()
-        else:
-            return focal_loss
-from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
-from transformers import AutoTokenizer, AutoModel, get_linear_schedule_with_warmup
+
+from transformers import (
+    AutoTokenizer, 
+    AutoModel, 
+    get_linear_schedule_with_warmup,
+    AdamW
+)
 
 
-# Supervised Contrastive Loss
-class SupConLoss(nn.Module):
-    def __init__(self, temperature=0.07):
-        super(SupConLoss, self).__init__()
-        self.temperature = temperature
-
-    def forward(self, features, labels):
-        device = features.device
-        batch_size = features.shape[0]
-        labels = labels.contiguous().view(-1, 1)
-        mask = torch.eq(labels, labels.T).float().to(device)
-
-        # Compute logits
-        anchor_dot_contrast = torch.div(
-            torch.matmul(features, features.T),
-            self.temperature
-        )
-        
-        # For numerical stability
-        logits_max, _ = torch.max(anchor_dot_contrast, dim=1, keepdim=True)
-        logits = anchor_dot_contrast - logits_max.detach()
-
-        # Mask-out self-contrast cases
-        logits_mask = torch.scatter(
-            torch.ones_like(mask),
-            1,
-            torch.arange(batch_size).view(-1, 1).to(device),
-            0
-        )
-        mask = mask * logits_mask
-
-        # Compute log_prob
-        exp_logits = torch.exp(logits) * logits_mask
-        log_prob = logits - torch.log(exp_logits.sum(1, keepdim=True) + 1e-6)
-
-        # Compute mean of log-likelihood over positive
-        # Modify mask to avoid division by zero
-        mask_sum = mask.sum(1)
-        mask_sum = torch.where(mask_sum > 0, mask_sum, torch.ones_like(mask_sum))
-        mean_log_prob_pos = (mask * log_prob).sum(1) / mask_sum
-
-        loss = -mean_log_prob_pos.mean()
-        return loss
-
-# Adversarial Training (FGM)
-class FGM():
-    def __init__(self, model):
-        self.model = model
-        self.backup = {}
-
-    def attack(self, epsilon=1.0, emb_name='word_embeddings'):
-        for name, param in self.model.named_parameters():
-            if param.requires_grad and emb_name in name:
-                self.backup[name] = param.data.clone()
-                norm = torch.norm(param.grad)
-                if norm != 0 and not torch.isnan(norm):
-                    r_at = epsilon * param.grad / norm
-                    param.data.add_(r_at)
-
-    def restore(self, emb_name='word_embeddings'):
-        for name, param in self.model.named_parameters():
-            if param.requires_grad and emb_name in name:
-                assert name in self.backup
-                param.data = self.backup[name]
-        self.backup = {}
-
-
-# data load
+# ==================== Data Loading & Preprocessing ====================
 def load_data_from_directory(dir_path):
+    """加载目录下所有CSV文件"""
     all_data = []
     if not os.path.exists(dir_path):
-        raise ValueError(f"can't find: {dir_path}")
+        raise ValueError(f"Directory not found: {dir_path}")
 
     csv_files = [f for f in os.listdir(dir_path) if f.endswith('.csv')]
-    logging.info(f"load data from {dir_path} ...")
+    logging.info(f"Loading data from {dir_path}...")
 
-    for filename in tqdm(csv_files, desc=f"loading {os.path.basename(dir_path)}"):
+    for filename in tqdm(csv_files, desc=f"Loading {os.path.basename(dir_path)}"):
         file_path = os.path.join(dir_path, filename)
         label_name = filename[:-4]
         try:
@@ -166,191 +40,206 @@ def load_data_from_directory(dir_path):
             if df.empty:
                 continue
             df.columns = [str(col).strip() for col in df.columns]
-            
-            # Locate Subject and Object columns in a case-insensitive way.
-            subject_col = None
-            object_col = None
-            for col in df.columns:
-                if col.lower() == 'subject':
-                    subject_col = col
-                elif col.lower() == 'object':
-                    object_col = col
-            
-            if subject_col is not None and object_col is not None:
-                df = df[[subject_col, object_col]].dropna()
+            if 'Subject' in df.columns and 'Object' in df.columns:
+                df = df[['Subject', 'Object']].dropna()
                 df['label'] = label_name
                 all_data.append(df)
         except Exception as e:
             logging.warning(f"{filename} load error: {e}")
 
     if not all_data:
-        raise ValueError(f"{dir_path} not valid data")
+        raise ValueError(f"No valid data found in {dir_path}")
 
     full_df = pd.concat(all_data, ignore_index=True)
-    
-    # Re-find columns after concat
-    subject_col = None
-    object_col = None
-    for col in full_df.columns:
-        if col.lower() == 'subject':
-            subject_col = col
-        elif col.lower() == 'object':
-            object_col = col
-            
-    full_df[subject_col] = full_df[subject_col].astype(str)
-    full_df[object_col] = full_df[object_col].astype(str)
+    full_df['Subject'] = full_df['Subject'].astype(str)
+    full_df['Object'] = full_df['Object'].astype(str)
     return full_df
 
 
-# encode data
-def get_type_hint(text):
-    text = str(text)
-    if re.match(r'^-?\d+(\.\d+)?$', text):
-        return "[NUM]"
-    if re.search(r'\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}\s+[A-Za-z]+\s+\d{4}', text):
-        return "[DATE]"
-    if re.search(r'https?://\S+', text):
-        return "[URL]"
-    return "[TXT]"
+def detect_and_remove_poisoned_data(df, threshold_ratio=0.95, min_samples=5):
+    """检测并移除中毒数据"""
+    label_counts = df['label'].value_counts()
+    rows_to_remove = []
 
-def encode_pair(tokenizer, text_a, text_b, max_length, use_type_hint=False):
-    if use_type_hint:
-        text_a = f"{get_type_hint(text_a)} {text_a}"
-        text_b = f"{get_type_hint(text_b)} {text_b}"
+    for label in label_counts.index:
+        label_df = df[df['label'] == label]
+        n_samples = len(label_df)
         
-    encoding = tokenizer(
-        text=text_a,
-        text_pair=text_b,
-        max_length=max_length,
-        padding='max_length',
-        truncation=True,
-        return_attention_mask=True,
-        return_tensors=None
-    )
+        if n_samples < min_samples:
+            continue
+        
+        # 检测Subject重复率
+        subject_counts = label_df['Subject'].value_counts()
+        if len(subject_counts) > 0 and subject_counts.iloc[0] / n_samples > threshold_ratio:
+            logging.warning(f"Removing poisoned label '{label}'")
+            rows_to_remove.extend(label_df.index.tolist())
+            continue
+        
+        # 检测Object重复率
+        object_counts = label_df['Object'].value_counts()
+        if len(object_counts) > 0 and object_counts.iloc[0] / n_samples > threshold_ratio:
+            logging.warning(f"Removing poisoned label '{label}'")
+            rows_to_remove.extend(label_df.index.tolist())
+            continue
+        
+        # 检测(S,O)对重复率
+        pair_counts = label_df.groupby(['Subject', 'Object']).size()
+        if len(pair_counts) > 0 and pair_counts.max() / n_samples > threshold_ratio:
+            logging.warning(f"Removing poisoned label '{label}'")
+            rows_to_remove.extend(label_df.index.tolist())
+            continue
+
+    cleaned_df = df.drop(rows_to_remove).reset_index(drop=True)
+    logging.info(f"Removed {len(rows_to_remove)} poisoned samples")
+    return cleaned_df
+
+
+def calculate_label_weights(label_counts):
+    """根据赛题公式计算少样本重要性权重"""
+    counts_max = label_counts.max()
+    counts_min = label_counts.min()
     
-    input_ids = encoding['input_ids']
-    attention_mask = encoding.get('attention_mask', None)
-
-    if attention_mask is None:
-        seq_len = len(input_ids)
-        seq_len = min(seq_len, max_length)
-        attention_mask = [1] * seq_len + [0] * (max_length - seq_len)
-
-    return np.array(input_ids, dtype='int64'), np.array(attention_mask, dtype='int64')
+    weights = {}
+    for label, count in label_counts.items():
+        numerator = counts_max - count + counts_min * 0.1
+        denominator = counts_max + counts_min * 0.1
+        weights[label] = numerator / denominator
+    
+    return weights
 
 
-# dataset
+# ==================== Dataset & DataLoader ====================
 class RelationDataset(Dataset):
-    def __init__(self, dataframe, tokenizer, label_encoder, max_length=64, augment=False, use_type_hint=False):
+    def __init__(self, dataframe, tokenizer, label_encoder, max_length=128):
+        self.data = dataframe.reset_index(drop=True)
         self.tokenizer = tokenizer
-        self.augment = augment
+        self.label_encoder = label_encoder
         self.max_length = max_length
-        self.use_type_hint = use_type_hint
-        
-        # Pre-process Subject and Object columns
-        subject_col, object_col = None, None
-        for col in dataframe.columns:
-            if col.lower() == 'subject': subject_col = col
-            elif col.lower() == 'object': object_col = col
-        
-        self.subjects = dataframe[subject_col].astype(str).tolist()
-        self.objects = dataframe[object_col].astype(str).tolist()
-        self.labels = label_encoder.transform(dataframe['label']).astype('int64').tolist()
 
     def __len__(self):
-        return len(self.labels)
-
-    def _apply_augmentation(self, text):
-        if not text: return text
-        words = text.split()
-        if len(words) < 2: return text
-        # Random word deletion
-        if random.random() < 0.1:
-            idx = random.randint(0, len(words) - 1)
-            words.pop(idx)
-        # Random word swap
-        if len(words) >= 2 and random.random() < 0.1:
-            idx1, idx2 = random.sample(range(len(words)), 2)
-            words[idx1], words[idx2] = words[idx2], words[idx1]
-        return " ".join(words)
+        return len(self.data)
 
     def __getitem__(self, idx):
-        subject_text = self.subjects[idx]
-        object_text = self.objects[idx]
+        row = self.data.iloc[idx]
+        text_input = f"{row['Subject']} [SEP] {row['Object']}"
         
-        if self.augment:
-            subject_text = self._apply_augmentation(subject_text)
-            object_text = self._apply_augmentation(object_text)
-            
-        input_ids, attention_mask = encode_pair(self.tokenizer, subject_text, object_text, self.max_length, use_type_hint=self.use_type_hint)
-            
+        encoding = self.tokenizer(
+            text_input,
+            max_length=self.max_length,
+            padding='max_length',
+            truncation=True,
+            return_attention_mask=True,
+            return_tensors='pt'
+        )
+        
+        input_ids = encoding['input_ids'].flatten()
+        attention_mask = encoding['attention_mask'].flatten()
+        label_id = torch.tensor(self.label_encoder.transform([row['label']])[0], dtype=torch.long)
+        
         return {
-            'valid': True,
-            'token_ids': input_ids,
-            'cls_mask': attention_mask,
-            'label_id': self.labels[idx],
+            'input_ids': input_ids,
+            'attention_mask': attention_mask,
+            'label_id': label_id
         }
 
 
-def dynamic_collate_fn(samples):
-    valid_samples = [s for s in samples if s.get('valid', False)]
-    if not valid_samples:
-        return None
-
-    return {
-        'data': np.stack([s['token_ids'] for s in valid_samples]).astype('int64'),
-        'label': np.array([s['label_id'] for s in valid_samples], dtype='int64'),
-        'cls_mask': np.stack([s['cls_mask'] for s in valid_samples]).astype('int64'),
-    }
-
-
-# model
+# ==================== Model ====================
 class CPAModel(nn.Module):
-    def __init__(self, shortcut_name, num_classes, use_gradient_checkpointing=False):
-        super(CPAModel, self).__init__()
-        self.encoder = AutoModel.from_pretrained(shortcut_name)
-        if use_gradient_checkpointing:
-            self.encoder.gradient_checkpointing_enable()
-            logging.info("Gradient checkpointing enabled for VRAM saving.")
-            
-        hidden_size = self.encoder.config.hidden_size
-        self.classifier = nn.Linear(hidden_size, num_classes)
-        self.dropout = nn.Dropout(0.1)
+    def __init__(self, model_name, num_labels, dropout_rate=0.1):
+        super().__init__()
+        self.encoder = AutoModel.from_pretrained(model_name)
+        self.dropout = nn.Dropout(dropout_rate)
+        
+        # 获取隐藏层维度
+        if hasattr(self.encoder.config, 'hidden_size'):
+            hidden_size = self.encoder.config.hidden_size
+        elif hasattr(self.encoder.config, 'dim'):
+            hidden_size = self.encoder.config.dim
+        else:
+            hidden_size = 768  # 默认值
+        
+        self.classifier = nn.Linear(hidden_size, num_labels)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
-        # Use CLS token pooling
-        cls_embedding = outputs.last_hidden_state[:, 0, :]
+        
+        if hasattr(outputs, 'last_hidden_state'):
+            sequence_output = outputs.last_hidden_state
+        elif isinstance(outputs, tuple):
+            sequence_output = outputs[0]
+        else:
+            sequence_output = outputs
+        
+        cls_embedding = sequence_output[:, 0, :]
         logits = self.classifier(self.dropout(cls_embedding))
         return logits
 
 
-def compute_kl_loss(p, q, pad_mask=None):
-    p_loss = F.kl_div(F.log_softmax(p, dim=-1), F.softmax(q, dim=-1), reduction='none')
-    q_loss = F.kl_div(F.log_softmax(q, dim=-1), F.softmax(p, dim=-1), reduction='none')
+# ==================== Evaluation Metric ====================
+def calculate_weighted_score(predictions, labels, label_encoder, label_weights):
+    """根据赛题公式计算加权分数"""
+    correct_counts = defaultdict(int)
+    total_counts = defaultdict(int)
     
-    # pad_mask can be used to ignore certain samples if needed
-    if pad_mask is not None:
-        p_loss.masked_fill_(~pad_mask, 0.)
-        q_loss.masked_fill_(~pad_mask, 0.)
+    for pred, label in zip(predictions, labels):
+        total_counts[label] += 1
+        if pred == label:
+            correct_counts[label] += 1
+    
+    weighted_sum = 0.0
+    weight_sum = 0.0
+    
+    for label in label_encoder.classes_:
+        label_idx = label_encoder.transform([label])[0]
+        m_total = total_counts.get(label_idx, 0)
+        m_correct = correct_counts.get(label_idx, 0)
+        
+        if m_total == 0:
+            continue
+        
+        m_score = m_correct / m_total
+        m_weight = label_weights.get(label, 0.0)
+        
+        weighted_sum += m_weight * m_score
+        weight_sum += m_weight
+    
+    if weight_sum == 0:
+        return 0.0
+    
+    return weighted_sum / weight_sum
 
-    # Normalized by batch size to be consistent with mean CE loss
-    p_loss = p_loss.sum() / p.size(0)
-    q_loss = q_loss.sum() / q.size(0)
 
-    loss = (p_loss + q_loss) / 2
-    return loss
+# ==================== FGM Adversarial Training ====================
+class FGM:
+    def __init__(self, model):
+        self.model = model
+        self.backup = {}
 
-# seed
+    def attack(self, epsilon=1.0, emb_name='embeddings'):
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and emb_name in name:
+                self.backup[name] = param.data.clone()
+                norm = torch.norm(param.grad)
+                if norm != 0:
+                    r_at = epsilon * param.grad / norm
+                    param.data.add_(r_at)
+
+    def restore(self, emb_name='embeddings'):
+        for name, param in self.model.named_parameters():
+            if param.requires_grad and emb_name in name:
+                assert name in self.backup
+                param.data = self.backup[name]
+        self.backup = {}
+
+
+# ==================== Training Helpers ====================
 def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
+    torch.cuda.manual_seed_all(seed)
 
 
-# log
 def setup_logging(save_dir):
     os.makedirs(save_dir, exist_ok=True)
     logging.basicConfig(
@@ -363,337 +252,224 @@ def setup_logging(save_dir):
     )
 
 
-# device
-def resolve_device(device_arg):
-    if device_arg and 'cuda' in device_arg and torch.cuda.is_available():
-        device = torch.device(device_arg)
-        logging.info(f'use: {device}')
-        return device
-    elif torch.cuda.is_available():
-        device = torch.device('cuda')
-        logging.info(f'use: {device}')
-        return device
-    else:
-        device = torch.device('cpu')
-        logging.warning('set device to CPU')
-        return device
-
-
-# labels
 def save_label_classes(label_encoder, save_dir):
     path = os.path.join(save_dir, 'label_classes.txt')
     with open(path, 'w', encoding='utf-8') as f:
         for label in label_encoder.classes_:
             f.write(f'{label}\n')
 
-def calculate_competition_score(all_preds, all_labels, m_weights, num_classes):
-    """
-    完全遵循赛题文档的最终分数计算规则:
-    Score_final = sum(m_weights * m_score) / sum(m_weights)
-    m_score = m_correct / m_total
-    """
-    m_correct = np.zeros(num_classes)
-    m_total = np.zeros(num_classes)
-    
-    for p, l in zip(all_preds, all_labels):
-        m_total[l] += 1
-        if p == l:
-            m_correct[l] += 1
-            
-    m_scores = np.zeros(num_classes)
-    # 只有在验证集中出现的类别才参与计算，避免分母为0
-    present_mask = (m_total > 0)
-    
-    for i in range(num_classes):
-        if m_total[i] > 0:
-            m_scores[i] = m_correct[i] / m_total[i]
-            
-    # 分母只计算验证集中出现的类别的权重和，以保证验证得分的公平性
-    numerator = (m_weights[present_mask] * m_scores[present_mask]).sum()
-    denominator = m_weights[present_mask].sum()
-    
-    score_final = numerator / denominator if denominator > 0 else 0.0
-    return score_final, m_scores, m_total
 
-def get_optimizer_params(model, lr, weight_decay, layerwise_lr_decay):
-    no_decay = ["bias", "LayerNorm.weight"]
-    # For BERT-like models
-    optimizer_grouped_parameters = []
-    
-    # Check if it's DeBERTa or BERT
-    if hasattr(model.encoder, 'embeddings'):
-        layers = model.encoder.encoder.layer if hasattr(model.encoder.encoder, 'layer') else model.encoder.transformer.layer
-        
-        # Initial LR for embeddings
-        current_lr = lr * (layerwise_lr_decay ** (len(layers) + 1))
-        
-        optimizer_grouped_parameters.append({
-            "params": [p for n, p in model.encoder.embeddings.named_parameters() if not any(nd in n for nd in no_decay)],
-            "weight_decay": weight_decay,
-            "lr": current_lr,
-        })
-        optimizer_grouped_parameters.append({
-            "params": [p for n, p in model.encoder.embeddings.named_parameters() if any(nd in n for nd in no_decay)],
-            "weight_decay": 0.0,
-            "lr": current_lr,
-        })
-        
-        # LLRD for layers
-        for i, layer in enumerate(layers):
-            current_lr = lr * (layerwise_lr_decay ** (len(layers) - i))
-            optimizer_grouped_parameters.append({
-                "params": [p for n, p in layer.named_parameters() if not any(nd in n for nd in no_decay)],
-                "weight_decay": weight_decay,
-                "lr": current_lr,
-            })
-            optimizer_grouped_parameters.append({
-                "params": [p for n, p in layer.named_parameters() if any(nd in n for nd in no_decay)],
-                "weight_decay": 0.0,
-                "lr": current_lr,
-            })
-            
-        # Task head (classifier) gets the base LR
-        optimizer_grouped_parameters.append({
-            "params": [p for n, p in model.classifier.named_parameters() if not any(nd in n for nd in no_decay)],
-            "weight_decay": weight_decay,
-            "lr": lr,
-        })
-        optimizer_grouped_parameters.append({
-            "params": [p for n, p in model.classifier.named_parameters() if any(nd in n for nd in no_decay)],
-            "weight_decay": 0.0,
-            "lr": lr,
-        })
-    else:
-        # Fallback to simple grouping
-        optimizer_grouped_parameters = [
-            {"params": [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)], "weight_decay": weight_decay},
-            {"params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], "weight_decay": 0.0},
-        ]
-        
-    return optimizer_grouped_parameters
-
-# train
+# ==================== Main Training Loop ====================
 def run_training(args):
-    save_dir_base = args.output_dir
-    os.makedirs(save_dir_base, exist_ok=True)
-    setup_logging(save_dir_base)
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    save_dir = os.path.join(args.output_dir, f'cpa_{timestamp}')
+    setup_logging(save_dir)
     set_seed(args.random_seed)
-    device = resolve_device(args.device)
+    
+    # 设备配置
+    device = torch.device('cuda' if torch.cuda.is_available() and args.device == 'gpu' else 'cpu')
+    logging.info(f'Device: {device}')
 
-    logging.info(f'device: {device}')
-
-    # 1. load train data
+    # 1. 加载并预处理数据
+    logging.info("Step 1: Loading raw training data...")
     raw_train_df = load_data_from_directory(args.train_dir)
+    logging.info(f"Raw data size: {len(raw_train_df)}")
+    
+    # 2. 检测并移除中毒数据
+    logging.info("Step 2: Detecting and removing poisoned data...")
+    cleaned_train_df = detect_and_remove_poisoned_data(
+        raw_train_df, 
+        threshold_ratio=args.poison_threshold,
+        min_samples=args.min_poison_samples
+    )
+    logging.info(f"Cleaned data size: {len(cleaned_train_df)}")
 
-    # 2. build label
+    # 3. 构建标签编码器和权重
+    logging.info("Step 3: Building label encoder and calculating weights...")
     label_encoder = LabelEncoder()
-    label_encoder.fit(raw_train_df['label'].unique())
+    label_encoder.fit(cleaned_train_df['label'].unique())
     num_classes = len(label_encoder.classes_)
-    logging.info(f'label_num: {num_classes}')
-    save_label_classes(label_encoder, save_dir_base)
-
-    # 3. K-Fold Cross Validation
-    skf = StratifiedKFold(n_splits=args.n_folds, shuffle=True, random_state=args.random_seed)
+    logging.info(f'Number of labels: {num_classes}')
     
-    # Filter out labels with only 1 sample for StratifiedKFold
-    counts = raw_train_df['label'].value_counts()
-    valid_labels = counts[counts >= args.n_folds].index
-    df_fold = raw_train_df[raw_train_df['label'].isin(valid_labels)].reset_index(drop=True)
-    df_single = raw_train_df[~raw_train_df['label'].isin(valid_labels)].reset_index(drop=True)
+    # 计算类别权重
+    label_counts = cleaned_train_df['label'].value_counts()
+    label_weights = calculate_label_weights(label_counts)
+    index_weights = torch.tensor([label_weights.get(label, 1.0) for label in label_encoder.classes_], dtype=torch.float32)
     
-    logging.info(f"Starting {args.n_folds}-fold cross validation...")
+    save_label_classes(label_encoder, save_dir)
     
-    fold_scores = []
+    # 4. 分割数据集
+    logging.info("Step 4: Splitting dataset...")
+    train_df, val_df = train_test_split(
+        cleaned_train_df,
+        test_size=args.val_ratio,
+        stratify=cleaned_train_df['label'],
+        random_state=args.random_seed,
+    )
     
-    for fold, (train_idx, val_idx) in enumerate(skf.split(df_fold, df_fold['label'])):
-        logging.info(f"\n{'='*20} Fold {fold + 1}/{args.n_folds} {'='*20}")
-        
-        save_dir = os.path.join(save_dir_base, f"fold_{fold+1}")
-        os.makedirs(save_dir, exist_ok=True)
-        
-        train_df = pd.concat([df_fold.iloc[train_idx], df_single]).sample(frac=1, random_state=args.random_seed).reset_index(drop=True)
-        val_df = df_fold.iloc[val_idx].reset_index(drop=True)
-        
-        # Calculate competition weights based on FULL train set distribution
-        counts_full = raw_train_df['label'].value_counts()
-        counts_max = counts_full.max()
-        counts_min = counts_full.min()
-        
-        m_weights_tensor = torch.zeros(num_classes).to(device)
-        for label, count in counts_full.items():
-            weight = (counts_max - count + counts_min * 0.1) / (counts_max + counts_min * 0.1)
-            class_idx = label_encoder.transform([label])[0]
-            m_weights_tensor[class_idx] = weight
-            
-        # Logit Adj Offsets
-        priors = np.zeros(num_classes)
-        for label, count in counts_full.items():
-            class_idx = label_encoder.transform([label])[0]
-            priors[class_idx] = count
-        priors = priors / priors.sum()
-        logit_adj_offsets = torch.tensor(np.log(priors + 1e-9)).to(device, dtype=torch.float32)
-
-        # 4. Tokenizer & DataLoader
-        tokenizer = AutoTokenizer.from_pretrained(args.shortcut_name)
-        train_dataset = RelationDataset(train_df, tokenizer, label_encoder, args.max_length, augment=args.use_augmentation, use_type_hint=args.use_type_hint)
-        
+    # 5. Tokenizer & DataLoader
+    logging.info("Step 5: Initializing tokenizer and dataloaders...")
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+    
+    # 加权采样（针对不平衡数据）
+    if args.weighted_sampling:
+        train_labels = train_df['label'].values
+        label_to_weight = {label: label_weights[label] for label in label_counts.index}
+        sample_weights = np.array([label_to_weight.get(label, 1.0) for label in train_labels])
+        sampler = WeightedRandomSampler(sample_weights, len(sample_weights), replacement=True)
+        train_shuffle = False
+    else:
         sampler = None
-        if args.use_balanced_sampler:
-            class_sample_counts = train_df['label'].value_counts()
-            weights = 1.0 / (class_sample_counts ** 0.5)
-            sample_weights = train_df['label'].map(weights).values
-            sampler = WeightedRandomSampler(torch.from_numpy(sample_weights), len(sample_weights))
-        
-        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=(sampler is None), sampler=sampler, collate_fn=dynamic_collate_fn, num_workers=args.num_workers)
-        val_loader = DataLoader(RelationDataset(val_df, tokenizer, label_encoder, args.max_length, use_type_hint=args.use_type_hint), batch_size=args.batch_size, shuffle=False, collate_fn=dynamic_collate_fn, num_workers=args.num_workers)
+        train_shuffle = True
+    
+    train_dataset = RelationDataset(train_df, tokenizer, label_encoder, args.max_length)
+    val_dataset = RelationDataset(val_df, tokenizer, label_encoder, args.max_length)
+    
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        shuffle=train_shuffle,
+        sampler=sampler,
+        num_workers=args.num_workers,
+        pin_memory=True
+    )
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=args.num_workers,
+        pin_memory=True
+    )
 
-        # 5. model init
-        model = CPAModel(args.shortcut_name, num_classes)
-        model.to(device)
+    # 6. 模型初始化
+    logging.info("Step 6: Initializing model...")
+    model = CPAModel(args.model_name, num_classes, args.dropout_rate).to(device)
+    
+    # 优化器和调度器
+    optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    total_steps = len(train_loader) * args.epochs
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=int(total_steps * args.warmup_ratio),
+        num_training_steps=total_steps
+    )
+    
+    # 加权交叉熵损失
+    criterion = nn.CrossEntropyLoss(weight=index_weights.to(device))
+
+    # 7. 训练
+    logging.info("Step 7: Starting training...")
+    best_score = 0.0
+    patience_counter = 0
+    fgm = FGM(model) if args.use_fgm else None
+
+    for epoch in range(args.epochs):
+        model.train()
+        tr_loss = 0.0
         
-        total_steps = max(1, len(train_loader) * args.epoch)
-        optimizer = torch.optim.AdamW(get_optimizer_params(model, args.lr, args.weight_decay, args.layerwise_lr_decay))
-        lr_scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=int(total_steps * args.warmup_ratio), num_training_steps=total_steps)
+        pbar = tqdm(train_loader, desc=f'Epoch {epoch + 1}/{args.epochs}')
+        for batch in pbar:
+            optimizer.zero_grad()
+            
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['label_id'].to(device)
+            
+            logits = model(input_ids, attention_mask)
+            loss = criterion(logits, labels)
+            
+            loss.backward()
+            
+            # FGM对抗训练
+            if fgm is not None:
+                fgm.attack()
+                logits_adv = model(input_ids, attention_mask)
+                loss_adv = criterion(logits_adv, labels)
+                loss_adv.backward()
+                fgm.restore()
+            
+            optimizer.step()
+            scheduler.step()
+            
+            tr_loss += loss.item()
+            pbar.set_postfix({'loss': f'{loss.item():.4f}'})
+
+        # 验证
+        model.eval()
+        all_preds = []
+        all_labels = []
         
-        if args.use_focal_loss:
-            loss_fn = FocalLoss(weight=m_weights_tensor if args.use_weighted_loss else None, gamma=args.focal_gamma, label_smoothing=args.label_smoothing)
+        with torch.no_grad():
+            for batch in val_loader:
+                input_ids = batch['input_ids'].to(device)
+                attention_mask = batch['attention_mask'].to(device)
+                labels = batch['label_id'].to(device)
+                
+                logits = model(input_ids, attention_mask)
+                preds = torch.argmax(logits, dim=1).cpu().numpy().tolist()
+                
+                all_preds.extend(preds)
+                all_labels.extend(labels.cpu().numpy().tolist())
+
+        # 计算指标
+        avg_train_loss = tr_loss / len(train_loader)
+        val_acc = sum(1 for p, l in zip(all_preds, all_labels) if p == l) / len(all_labels)
+        weighted_score = calculate_weighted_score(all_preds, all_labels, label_encoder, label_weights)
+
+        logging.info(f'Epoch {epoch + 1} | Loss: {avg_train_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
+
+        # 保存最佳模型
+        if weighted_score > best_score:
+            best_score = weighted_score
+            patience_counter = 0
+            torch.save(model.state_dict(), os.path.join(save_dir, 'best_model.pth'))
+            tokenizer.save_pretrained(save_dir)
+            logging.info(f'Best model saved! (Weighted Score: {best_score:.4f})')
         else:
-            loss_fn = nn.CrossEntropyLoss(weight=m_weights_tensor if args.use_weighted_loss else None, label_smoothing=args.label_smoothing)
+            patience_counter += 1
+            logging.info(f'Early stop count: {patience_counter}/{args.patience}')
+            if patience_counter == args.patience:
+                logging.info(f'Early stopping after {args.patience} epochs without improvement')
+                break
 
-        ema = EMA(model, args.ema_decay) if args.use_ema else None
-        if ema: ema.register()
-        fgm = FGM(model) if args.use_fgm else None
-        use_amp = args.use_amp and device.type != 'cpu'
-        scaler = torch.cuda.amp.GradScaler() if use_amp else None
-
-        # 6. training loop
-        best_score = 0.0
-        patience_counter = 0
-        
-        for epoch in range(args.epoch):
-            model.train()
-            tr_loss, train_steps = 0.0, 0
-            pbar = tqdm(train_loader, desc=f'Fold {fold+1} Epoch {epoch+1}')
-            
-            for batch in pbar:
-                if batch is None: continue
-                input_ids = torch.tensor(batch['data'], dtype=torch.long, device=device)
-                mask = torch.tensor(batch['cls_mask'], dtype=torch.long, device=device)
-                label_ids = torch.tensor(batch['label'], dtype=torch.long, device=device)
-                
-                optimizer.zero_grad()
-                
-                with torch.amp.autocast(device_type=device.type, enabled=use_amp):
-                    if args.use_rdrop:
-                        input_ids_double = torch.cat([input_ids, input_ids], dim=0)
-                        mask_double = torch.cat([mask, mask], dim=0)
-                        logits_all = model(input_ids_double, mask_double)
-                        if args.use_logit_adj: logits_all = logits_all + args.logit_adj_tau * logit_adj_offsets
-                        logits, logits2 = torch.split(logits_all, input_ids.size(0))
-                        ce_loss = 0.5 * (loss_fn(logits, label_ids) + loss_fn(logits2, label_ids))
-                        loss = ce_loss + args.rdrop_alpha * compute_kl_loss(logits, logits2)
-                    else:
-                        logits = model(input_ids, mask)
-                        if args.use_logit_adj: logits = logits + args.logit_adj_tau * logit_adj_offsets
-                        loss = loss_fn(logits, label_ids)
-                    
-                    loss = loss / args.grad_accum_steps
-                
-                scaler.scale(loss).backward()
-                
-                if (train_steps + 1) % args.grad_accum_steps == 0:
-                    if fgm:
-                        fgm.attack()
-                        with torch.amp.autocast(device_type=device.type, enabled=use_amp):
-                            logits_adv = model(input_ids, mask)
-                            if args.use_logit_adj: logits_adv = logits_adv + args.logit_adj_tau * logit_adj_offsets
-                            loss_adv = loss_fn(logits_adv, label_ids) / args.grad_accum_steps
-                        scaler.scale(loss_adv).backward()
-                        fgm.restore()
-                        
-                    scaler.step(optimizer)
-                    scaler.update()
-                    optimizer.zero_grad()
-                    if ema: ema.update()
-                    lr_scheduler.step()
-                
-                tr_loss += loss.item() * args.grad_accum_steps
-                train_steps += 1
-                pbar.set_postfix({'loss': f'{loss.item():.4f}'})
-
-            # val stage
-            model.eval()
-            if ema: ema.apply_shadow()
-            all_preds, all_labels = [], []
-            with torch.no_grad():
-                for batch in val_loader:
-                    if batch is None: continue
-                    input_ids = torch.tensor(batch['data'], dtype=torch.long, device=device)
-                    mask = torch.tensor(batch['cls_mask'], dtype=torch.long, device=device)
-                    logits = model(input_ids, mask)
-                    all_preds.extend(torch.argmax(logits, dim=1).cpu().numpy())
-                    all_labels.extend(batch['label'])
-
-            score_final, m_scores, m_total_val = calculate_competition_score(np.array(all_preds), np.array(all_labels), m_weights_tensor.cpu().numpy(), num_classes)
-            logging.info(f'Fold {fold+1} Epoch {epoch+1} | Score: {score_final:.4f}')
-
-            if score_final > best_score:
-                best_score = score_final
-                patience_counter = 0
-                torch.save(model.state_dict(), os.path.join(save_dir, 'best_model.pth'))
-                logging.info(f'New best score: {best_score:.4f}')
-            else:
-                patience_counter += 1
-                if patience_counter >= args.patience:
-                    logging.info("Early stopping...")
-                    break
-            if ema: ema.restore()
-            
-        fold_scores.append(best_score)
-        
-    logging.info(f'\nCV Finish! Avg Score: {np.mean(fold_scores):.4f} | Scores: {fold_scores}')
+    logging.info(f'Training finished. Best weighted score: {best_score:.4f}')
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='PyTorch Training for CPA Task')
+    
+    # Data parameters
     parser.add_argument('--train_dir', type=str, default="./dataset/Train_Set")
-    parser.add_argument('--output_dir', type=str, default='./model')
-    parser.add_argument('--shortcut_name', type=str, default='bert-base-uncased')
-    parser.add_argument('--batch_size', type=int, default=16)
-    parser.add_argument('--epoch', type=int, default=10)
+    parser.add_argument('--output_dir', type=str, default='./cpa_output')
+    
+    # Model parameters
+    parser.add_argument('--model_name', type=str, default='microsoft/deberta-v3-base',
+                        help='Pre-trained model name from Hugging Face')
+    parser.add_argument('--max_length', type=int, default=128)
+    parser.add_argument('--dropout_rate', type=float, default=0.1)
+    
+    # Training parameters
+    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--epochs', type=int, default=10)
     parser.add_argument('--lr', type=float, default=2e-5)
-    parser.add_argument('--max_length', type=int, default=64)
-    parser.add_argument('--random_seed', type=int, default=42)
-    parser.add_argument('--num_workers', type=int, default=0)
-    parser.add_argument('--use_amp', action='store_true', default=True)
+    parser.add_argument('--weight_decay', type=float, default=1e-4)
     parser.add_argument('--warmup_ratio', type=float, default=0.1)
     parser.add_argument('--patience', type=int, default=3)
     parser.add_argument('--val_ratio', type=float, default=0.1)
-    parser.add_argument('--device', type=str, default='cuda')
-    parser.add_argument('--use_weighted_loss', action='store_true', help='Use weighted loss based on competition importance')
-    parser.add_argument('--oversample_rare', action='store_true', help='Oversample rare classes in training set')
-    parser.add_argument('--use_augmentation', action='store_true', help='Use simple text augmentation')
-    parser.add_argument('--label_smoothing', type=float, default=0.1)
-    parser.add_argument('--use_balanced_sampler', action='store_true', help='Use WeightedRandomSampler for class balancing')
-    parser.add_argument('--use_focal_loss', action='store_true', help='Use FocalLoss for class imbalance')
-    parser.add_argument('--focal_gamma', type=float, default=2.0, help='Gamma for FocalLoss')
-    parser.add_argument('--use_rdrop', action='store_true', help='Use R-Drop regularization')
-    parser.add_argument('--rdrop_alpha', type=float, default=4.0, help='Weight for KL loss in R-Drop')
-    parser.add_argument('--use_supcon', action='store_true', help='Use Supervised Contrastive Learning')
-    parser.add_argument('--supcon_temp', type=float, default=0.07, help='Temperature for SupCon')
-    parser.add_argument('--supcon_weight', type=float, default=0.1, help='Weight for SupCon loss')
-    parser.add_argument('--use_mixup', action='store_true', help='Use Manifold Mixup')
-    parser.add_argument('--mixup_alpha', type=float, default=0.2, help='Alpha for Beta distribution in Mixup')
-    parser.add_argument('--use_fgm', action='store_true', help='Use FGM adversarial training')
-    parser.add_argument('--use_logit_adj', action='store_true', help='Use Logit Adjustment for long-tail learning')
-    parser.add_argument('--logit_adj_tau', type=float, default=1.0, help='Tau for Logit Adjustment')
-    parser.add_argument('--use_type_hint', action='store_true', help='Use data type hinting in features')
-    parser.add_argument('--use_ema', action='store_true', help='Use Exponential Moving Average')
-    parser.add_argument('--ema_decay', type=float, default=0.999, help='Decay for EMA')
-    parser.add_argument('--weight_decay', type=float, default=0.01, help='Weight decay for AdamW')
-    parser.add_argument('--layerwise_lr_decay', type=float, default=0.95, help='Layer-wise learning rate decay factor')
-    parser.add_argument('--grad_accum_steps', type=int, default=2, help='Steps for gradient accumulation to save VRAM')
-    parser.add_argument('--n_folds', type=int, default=3, help='Number of folds for cross validation')
-    parser.add_argument('--use_gradient_checkpointing', action='store_true', default=True, help='Use gradient checkpointing to save VRAM')
+    parser.add_argument('--random_seed', type=int, default=42)
+    parser.add_argument('--num_workers', type=int, default=4)
+    
+    # Data preprocessing parameters
+    parser.add_argument('--poison_threshold', type=float, default=0.95)
+    parser.add_argument('--min_poison_samples', type=int, default=5)
+    
+    # Training enhancements
+    parser.add_argument('--weighted_sampling', action='store_true', default=True,
+                        help='Use weighted random sampling for class imbalance')
+    parser.add_argument('--use_fgm', action='store_true', default=False,
+                        help='Use FGM adversarial training')
+    parser.add_argument('--device', type=str, default='gpu',
+                        help='Device type: cpu or gpu')
+    
     args = parser.parse_args()
     run_training(args)
