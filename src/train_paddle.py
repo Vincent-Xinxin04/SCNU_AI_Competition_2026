@@ -591,6 +591,11 @@ def run_training(args):
     logging.info("Step 5: Initializing model...")
     model = CPAModel(args.shortcut_name, num_classes, args.dropout_rate, args.pooling_strategy, args.use_multi_head)
     
+    if args.init_checkpoint is not None:
+        logging.info(f"Loading checkpoint from {args.init_checkpoint}...")
+        model.set_state_dict(paddle.load(args.init_checkpoint))
+        logging.info("Checkpoint loaded successfully!")
+    
     total_steps = max(1, len(train_loader) * args.epochs)
     
     if args.lr_scheduler == 'cosine':
@@ -761,6 +766,8 @@ if __name__ == '__main__':
     # Model parameters
     parser.add_argument('--shortcut_name', type=str, default='bert-large-uncased',
                         help='Pre-trained model name from PaddleNLP')
+    parser.add_argument('--init_checkpoint', type=str, default=None,
+                        help='Path to checkpoint file for resume training')
     parser.add_argument('--max_length', type=int, default=128)
     parser.add_argument('--dropout_rate', type=float, default=0.1)
     parser.add_argument('--pooling_strategy', type=str, default='cls_mean_max',
