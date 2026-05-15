@@ -635,18 +635,12 @@ def run_training(args):
     else:
         ema = None
 
-    # 6. 训练
-    logging.info("Step 6: Starting training...")
-    best_score = 0.0
-    patience_counter = 0
-    fgm = FGM(model) if args.use_fgm else None
-
-    for epoch in range(args.epochs):
+    def train_one_epoch(model, train_loader, optimizer, lr_scheduler, criterion, fgm, ema, scaler, use_amp, device, epoch, total_epochs, desc_prefix='Epoch'):
         model.train()
         tr_loss = 0.0
         train_steps = 0
         
-        pbar = tqdm(train_loader, desc=f'Epoch {epoch + 1}/{args.epochs}')
+        pbar = tqdm(train_loader, desc=f'{desc_prefix} {epoch + 1}/{total_epochs}')
         for batch in pbar:
             if batch is None:
                 continue
@@ -688,21 +682,22 @@ def run_training(args):
                 optimizer.step()
                 optimizer.clear_grad()
 
-                if ema is not None:
-                    ema.step()
+            if ema is not None:
+                ema.step()
 
             lr_scheduler.step()
             loss_value = float(loss.numpy())
             tr_loss += loss_value
             train_steps += 1
             pbar.set_postfix({'loss': f'{loss_value:.4f}'})
-
-        # 验证（使用EMA权重）
+        
+        return tr_loss / max(1, train_steps)
+    
+    def evaluate(model, val_loader, use_amp, ema):
         model.eval()
         all_preds = []
         all_labels = []
         
-        # 应用EMA权重
         if ema is not None:
             ema.apply()
         
@@ -725,31 +720,146 @@ def run_training(args):
                 all_preds.extend(preds)
                 all_labels.extend(label_ids.numpy().tolist())
         
-        # 恢复原始权重
         if ema is not None:
             ema.restore()
-
-        avg_train_loss = tr_loss / max(1, train_steps)
+        
         val_acc = sum(1 for p, l in zip(all_preds, all_labels) if p == l) / len(all_labels)
         weighted_score = calculate_weighted_score(all_preds, all_labels, label_encoder, label_weights)
+        
+        return val_acc, weighted_score
+    
+    # 6. 训练
+    logging.info("Step 6: Starting training...")
+    best_score = 0.0
+    patience_counter = 0
+    fgm = FGM(model) if args.use_fgm else None
 
-        logging.info(f'Epoch {epoch + 1} | Loss: {avg_train_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
+    if args.use_two_stage_training:
+        logging.info("=" * 60)
+        logging.info("Two-Stage Training Mode")
+        logging.info("=" * 60)
+        
+        # ========== Stage 1: Pretrain on common classes ==========
+        logging.info(f"\n[Stage 1] Pretraining on common classes (samples >= {args.stage1_threshold})...")
+        
+        train_label_counts = train_df['label'].value_counts()
+        common_labels = train_label_counts[train_label_counts >= args.stage1_threshold].index
+        df_common = train_df[train_df['label'].isin(common_labels)]
+        
+        logging.info(f"[Stage 1] Common labels: {len(common_labels)}, samples: {len(df_common)}")
+        
+        stage1_train_loader = DataLoader(
+            RelationDataset(df_common, tokenizer, label_encoder, args.max_length, augment=args.data_augment),
+            batch_size=args.batch_size,
+            shuffle=True,
+            collate_fn=dynamic_collate_fn,
+            num_workers=args.num_workers,
+            return_list=True,
+        )
+        
+        stage1_lr_scheduler = paddle.optimizer.lr.CosineAnnealingDecay(
+            learning_rate=args.stage1_lr,
+            T_max=max(1, len(stage1_train_loader) * args.stage1_epochs),
+            eta_min=1e-7
+        )
+        stage1_lr_scheduler = paddle.optimizer.lr.LinearWarmup(
+            learning_rate=stage1_lr_scheduler,
+            warmup_steps=int(len(stage1_train_loader) * args.stage1_epochs * args.warmup_ratio),
+            start_lr=0.0,
+            end_lr=args.stage1_lr
+        )
+        stage1_optimizer = paddle.optimizer.AdamW(
+            learning_rate=stage1_lr_scheduler,
+            parameters=model.parameters(),
+            weight_decay=args.weight_decay
+        )
+        
+        for epoch in range(args.stage1_epochs):
+            avg_loss = train_one_epoch(
+                model, stage1_train_loader, stage1_optimizer, stage1_lr_scheduler,
+                criterion, fgm, ema, scaler, use_amp, device, epoch, args.stage1_epochs, '[Stage 1]'
+            )
+            val_acc, weighted_score = evaluate(model, val_loader, use_amp, ema)
+            logging.info(f'[Stage 1] Epoch {epoch + 1} | Loss: {avg_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
+        
+        logging.info("[Stage 1] Pretraining completed!")
+        
+        # ========== Stage 2: Finetune on all data ==========
+        logging.info(f"\n[Stage 2] Finetuning on all data (lr={args.stage2_lr})...")
+        logging.info(f"[Stage 2] All labels: {num_classes}, samples: {len(train_df)}")
+        
+        stage2_total_epochs = args.stage2_epochs
+        stage2_lr_scheduler = paddle.optimizer.lr.CosineAnnealingDecay(
+            learning_rate=args.stage2_lr,
+            T_max=max(1, len(train_loader) * stage2_total_epochs),
+            eta_min=1e-7
+        )
+        stage2_lr_scheduler = paddle.optimizer.lr.LinearWarmup(
+            learning_rate=stage2_lr_scheduler,
+            warmup_steps=int(len(train_loader) * stage2_total_epochs * args.warmup_ratio),
+            start_lr=0.0,
+            end_lr=args.stage2_lr
+        )
+        stage2_optimizer = paddle.optimizer.AdamW(
+            learning_rate=stage2_lr_scheduler,
+            parameters=model.parameters(),
+            weight_decay=args.weight_decay
+        )
+        
+        for epoch in range(stage2_total_epochs):
+            avg_loss = train_one_epoch(
+                model, train_loader, stage2_optimizer, stage2_lr_scheduler,
+                criterion, fgm, ema, scaler, use_amp, device, epoch, stage2_total_epochs, '[Stage 2]'
+            )
+            val_acc, weighted_score = evaluate(model, val_loader, use_amp, ema)
+            logging.info(f'[Stage 2] Epoch {epoch + 1} | Loss: {avg_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
+            
+            if weighted_score > best_score:
+                best_score = weighted_score
+                patience_counter = 0
+                paddle.save(model.state_dict(), os.path.join(save_dir, 'best_model.pdparams'))
+                try:
+                    tokenizer.save_pretrained(save_dir)
+                except Exception:
+                    pass
+                logging.info(f'Best model saved! (Weighted Score: {best_score:.4f})')
+            else:
+                patience_counter += 1
+                logging.info(f'Early stop count: {patience_counter}/{args.patience}')
+                if patience_counter == args.patience:
+                    logging.info(f'Early stopping after {args.patience} epochs without improvement')
+                    break
+        
+        logging.info("[Stage 2] Finetuning completed!")
+        logging.info("=" * 60)
+        logging.info("Two-Stage Training finished!")
+        logging.info("=" * 60)
+    
+    else:
+        # Single-stage training (original behavior)
+        for epoch in range(args.epochs):
+            avg_loss = train_one_epoch(
+                model, train_loader, optimizer, lr_scheduler,
+                criterion, fgm, ema, scaler, use_amp, device, epoch, args.epochs
+            )
+            val_acc, weighted_score = evaluate(model, val_loader, use_amp, ema)
+            logging.info(f'Epoch {epoch + 1} | Loss: {avg_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
 
-        if weighted_score > best_score:
-            best_score = weighted_score
-            patience_counter = 0
-            paddle.save(model.state_dict(), os.path.join(save_dir, 'best_model.pdparams'))
-            try:
-                tokenizer.save_pretrained(save_dir)
-            except Exception:
-                pass
-            logging.info(f'Best model saved! (Weighted Score: {best_score:.4f})')
-        else:
-            patience_counter += 1
-            logging.info(f'Early stop count: {patience_counter}/{args.patience}')
-            if patience_counter == args.patience:
-                logging.info(f'Early stopping after {args.patience} epochs without improvement')
-                break
+            if weighted_score > best_score:
+                best_score = weighted_score
+                patience_counter = 0
+                paddle.save(model.state_dict(), os.path.join(save_dir, 'best_model.pdparams'))
+                try:
+                    tokenizer.save_pretrained(save_dir)
+                except Exception:
+                    pass
+                logging.info(f'Best model saved! (Weighted Score: {best_score:.4f})')
+            else:
+                patience_counter += 1
+                logging.info(f'Early stop count: {patience_counter}/{args.patience}')
+                if patience_counter == args.patience:
+                    logging.info(f'Early stopping after {args.patience} epochs without improvement')
+                    break
 
     logging.info(f'Training finished. Best weighted score: {best_score:.4f}')
 
@@ -807,6 +917,19 @@ if __name__ == '__main__':
     parser.add_argument('--lr_scheduler', type=str, default='cosine',
                         choices=['linear', 'cosine'],
                         help='Learning rate scheduler type')
+    
+    parser.add_argument('--use_two_stage_training', action='store_true', default=False,
+                        help='Enable two-stage training: pretrain on common classes, then finetune on all data')
+    parser.add_argument('--stage1_epochs', type=int, default=5,
+                        help='Number of epochs for stage 1 (pretraining on common classes)')
+    parser.add_argument('--stage2_epochs', type=int, default=10,
+                        help='Number of epochs for stage 2 (finetuning on all data)')
+    parser.add_argument('--stage1_lr', type=float, default=3e-5,
+                        help='Learning rate for stage 1')
+    parser.add_argument('--stage2_lr', type=float, default=5e-5,
+                        help='Learning rate for stage 2 (finetuning)')
+    parser.add_argument('--stage1_threshold', type=int, default=20,
+                        help='Sample threshold for stage 1: classes with >= this many samples are used in stage 1')
     
     # Device parameters
     parser.add_argument('--device', type=str, default='auto',
