@@ -1,0 +1,6 @@
+Pair: (Multicopper oxidase, type 2 -> protein domain) | Pred: has part | Train: ['instance of']
+Pair: (NAD -> protein domain) | Pred: has part | Train: ['instance of']
+Pair: (Formyl transferase, N-terminal -> protein domain) | Pred: has part | Train: ['instance of']
+Pair: (RNA polymerase sigma-70 like domain -> protein domain) | Pred: subclass of | Train: ['instance of']
+Pair: (AMP-dependent synthetase/ligase -> protein domain) | Pred: has part | Train: ['instance of']
+Pair: (Protein kinase domain -> protein domain) | Pred: subclass of | Train: ['instance of']

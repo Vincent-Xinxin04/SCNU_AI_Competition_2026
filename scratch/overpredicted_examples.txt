@@ -1,0 +1,203 @@
+
+--- has facility ---
+The Convent -> official residence
+Lord Nelson Inn -> beer garden
+Stjernehallen -> indoor ice rink
+The Woolpack Inn -> beer garden
+White Swan Inn -> beer garden
+Horácký zimní stadion -> indoor ice rink
+Quartiere Lagosta -> housing estate
+Olympia Eishalle -> indoor ice rink
+KV Arena -> indoor ice rink
+Ice rink at the West Station -> indoor ice rink
+Helsinki Ice Hall -> indoor ice rink
+Borås Ishall -> indoor ice rink
+Quartiere Ettore Ponti -> housing estate
+Skalica Ice Stadium -> indoor ice rink
+Lakajgården -> housing estate
+
+--- platform ---
+V.I.P. Casino: Blackjack -> Wii
+Wii -> Nintendo
+Unreal Engine -> GNU/Linux
+wxWidgets -> macOS
+SMath Studio -> Microsoft Windows
+Derive -> Microsoft Windows
+Wii U -> Nintendo
+Uno -> Wii
+GNU Emacs -> Microsoft Windows
+Qt -> macOS
+Freeciv -> Microsoft Windows
+Nintendo GameCube -> Nintendo
+Allegro -> iOS
+Texas Hold'em King -> Android
+Allegro -> macOS
+
+--- highway system ---
+Ontario Highway 581 -> highway
+Ontario Highway 11 -> highway
+N51 road -> national road in Belgium
+British Columbia Highway 3 -> highway
+N287 road -> national road in Belgium
+BR-319 -> Federal Roads in Brazil
+N283 road -> national road in Belgium
+N282 road -> national road in Belgium
+
+--- use ---
+2009 Rostelecom Cup - ice dancing compulsory dance -> ISU Judging System
+2009 Skate Canada International - ice dancing compulsory dance -> ISU Judging System
+Oxelösund lighthouse -> lower light
+2008 Cup of Russia - ice dancing compulsory dance -> ISU Judging System
+Palácio do Planalto -> official residence
+Church Inn -> inn
+2009 Skate America - ice dancing compulsory dance -> ISU Judging System
+The Romany Inn -> inn
+Rashtrapati Bhavan -> official residence
+RV Derinsu -> survey vessel
+Biblioteca Medicea Laurenziana -> State public library
+2008 Skate Canada International - ice dancing compulsory dance -> ISU Judging System
+The Drew Las Vegas -> skyscraper
+The Woolpack Inn -> inn
+University Library of Naples -> State public library
+
+--- has grammatical gender ---
+Ancient Greek -> neuter
+Aemilia gens -> feminine
+Claudia gens -> feminine
+Julia gens -> feminine
+Calpurnia gens -> feminine
+Licinia gens -> feminine
+Sempronia gens -> feminine
+
+--- parity quantum number ---
+cerium-125 -> -1
+francium-215 -> -1
+gold-204 -> -1
+bismuth-201 -> -1
+iron-51 -> -1
+praseodymium-129 -> -1
+bismuth-195 -> -1
+rubidium-88 -> -1
+osmium-179 -> -1
+francium-205 -> -1
+iron-67 -> -1
+lead-183 -> -1
+lead-201 -> -1
+antimony-122 -> -1
+iron-61 -> -1
+
+--- operating system ---
+KWrite -> Unix-like
+wxWidgets -> GNU/Linux
+Bluefish -> Unix-like
+GTK -> Linux
+iPhone 8 -> iOS
+iPhone 5S -> iOS 7
+iPhone 5 -> iOS
+Popcorn Time -> Android
+Samsung Gear -> Android
+Freeciv -> Linux
+iPhone 4S -> iOS 6
+Adobe AIR -> Android
+Huawei Mate -> Android
+Leafpad -> Unix-like
+Frozen Bubble -> Linux
+
+--- sports season of league or competition ---
+2008–09 Celtic League -> Pro14
+2010–11 Celtic League -> Pro14
+2007–08 Celtic League -> Pro14
+2012–13 Pro 12 -> Pro14
+2009–10 Celtic League -> Pro14
+2013–14 Pro 12 -> Pro14
+2014–15 Pro12 -> Pro14
+2011–12 Pro 12 -> Pro14
+2006–07 Celtic League -> Pro14
+2016–17 Pro12 -> Pro14
+2015–16 Pro12 -> Pro14
+
+--- discovery method ---
+SDSS J082130.66+373330.6 -> Gravitational lens
+SDSS J123427.98-024129.5 -> Gravitational lens
+SDSS J121504.44+004726.0 -> Gravitational lens
+SWELLS SDSS J1203+2535 lens -> Gravitational lens
+SDSS J154246.33+162951.7 -> Gravitational lens
+SWELLS SDSS J1300+3704 lens -> Gravitational lens
+[SAB2013] SDSS J0105+0145 lens -> Gravitational lens
+[SAB2013] SDSS J0921+1810 lens -> Gravitational lens
+SDSS J133751.31+362018.0 -> Gravitational lens
+SDSS J084054.18+505152.8 -> Gravitational lens
+SDSS J163150.32+185404.0 -> Gravitational lens
+SDSS J212252.04+040935.5 -> Gravitational lens
+[KAD2010] SDSS J1537+6556 lens -> Gravitational lens
+SWELLS SDSS J0822+1828 lens -> Gravitational lens
+SWELLS SDSS J1117+4704 lens -> Gravitational lens
+
+--- linguistic typology ---
+Black Speech -> agglutinative language
+Romansh -> subject–verb–object
+Udmurt -> subject–verb–object
+Romansh -> fusional language
+Ido -> subject–verb–object
+Moksha -> nominative–accusative language
+Udmurt -> agglutinative language
+Lingua Ignota -> agglutinative language
+Toki Pona -> subject–verb–object
+Dothraki language -> subject–verb–object
+Romansh -> syllabic language
+Poliespo -> agglutinative language
+Bolak -> agglutinative language
+Moksha -> agglutinative language
+Udmurt -> nominative–accusative language
+
+--- instrumentation ---
+Violin Concerto No. 3 -> violin
+Concerto for Violin and Strings -> violin
+Rondo in C for Violin and Orchestra -> violin
+Violin Concerto No. 1 -> violin
+Violin Concerto No. 5 -> violin
+Carmen Fantasy -> violin
+Concerto No. 4 in F minor, Op. 8, RV 297 -> orchestra
+Concerto No. 3 in F major, Op. 8, RV 293 -> orchestra
+Violin Concerto No. 4 -> violin
+Violin concerto No. 4 -> violin
+Violin Concerto No. 2 -> violin
+Violin Concerto -> violin
+Adagio in E for Violin and Orchestra -> violin
+Violin Concerto No. 4 -> orchestra
+
+--- religious order ---
+Tintern Abbey -> Cistercians
+Kirkstall Abbey -> Cistercians
+Fontainejean Abbey -> Cistercians
+Melrose Abbey -> Cistercians
+Hailes Abbey -> Cistercians
+
+--- position held ---
+Faramir -> Ruling Steward of Gondor
+Húrin of Emyn Arnen -> Ruling Steward of Gondor
+Ecthelion II -> Ruling Steward of Gondor
+Cirion -> Ruling Steward of Gondor
+Eradan -> Ruling Steward of Gondor
+Denethor II -> Ruling Steward of Gondor
+Belegorn -> Ruling Steward of Gondor
+
+--- type of orbit ---
+SES-14 -> geostationary orbit
+Lacus Aestatis -> Moon
+Lacus Hiemalis -> Moon
+INSAT-3B -> geostationary orbit
+INSAT-1C -> geostationary orbit
+HYLAS-4 -> geostationary orbit
+IRNSS-1I -> geostationary orbit
+Lacus Spei -> Moon
+Lacus Doloris -> Moon
+BSAT-4a -> geostationary orbit
+Superbird-B3 -> geostationary orbit
+Lacus Bonitatis -> Moon
+
+--- armament ---
+September 11 attacks -> suicide attack
+Boston Marathon bombings -> terrorism
+Munich massacre -> terrorism
+Munich massacre -> hostage crisis

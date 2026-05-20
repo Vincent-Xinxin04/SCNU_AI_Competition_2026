@@ -1,0 +1,91 @@
+Total missing labels: 90
+Label: 'CJKV variant character' (samples: 3): 海 -> 海 (U+FA45), 著 -> 著 (U+FA5F), 著 -> 著 (U+FA5F)
+Label: 'VAT-rate' (samples: 3): Saudi Arabia -> 5.0, Chad -> 18.0, Chad -> 18.0
+Label: 'World Health Organisation International Nonproprietary Name' (samples: 2): propranolol -> propranolol, (RS)-citalopram -> citalopram
+Label: 'absolute magnitude' (samples: 3): Tupi -> 4.4, 50000 Quaoar -> 2.4, Makemake -> -0.2
+Label: 'after a work by' (samples: 3): Kilgarren castle, Cardiganshire -> William Havell, The Emperor's New Groove -> Roger Allers, The Emperor's New Groove -> Roger Allers
+Label: 'anatomical location' (samples: 3): digestive system process -> digestive system, lung development -> lung, brain development -> brain
+Label: 'art director' (samples: 3): The Three Lives of Thomasina -> Michael Stringer, Greyfriars Bobby -> Michael Stringer, The Three Lives of Thomasina -> Michael Stringer
+Label: 'catalog' (samples: 3): Design for a decorative detail of a ceiling in Neo-Classical style -> Drawings from the 17th and 18th centuries. The Van Herck collection, Design for a decorative detail of a ceiling in Neo-Classical style -> Drawings from the 17th and 18th centuries. The Van Herck collection, Design for a decorative detail of a ceiling in Neo-Classical style -> Drawings from the 17th and 18th centuries. The Van Herck collection
+Label: 'coextensive with' (samples: 3): Bliesaue zwischen Blieskastel und Bliesdalheim -> Bliesaue zwischen Blieskastel und Bliesdalheim, Wohldorfer Wald -> Wohldorfer Wald, NSG Krombachtalsperre -> NSG Krombachtalsperre
+Label: 'commissioned by' (samples: 3): Portinari Altarpiece -> Tommaso Portinari, RB 7 -> Nordhessischer Verkehrsverbund, RB 6 -> Nordhessischer Verkehrsverbund
+Label: 'compulsory education (maximum age)' (samples: 3): India -> 14, Argentina -> 14, India -> 14
+Label: 'connecting service' (samples: 3): Méndez Álvaro -> rapid transit, 30th Street Station -> Carolinian, Wheaton -> Red Line
+Label: 'contains settlement' (samples: 3): Raspenava -> Peklo, Heerhugowaard -> Butterhuizen, Heerhugowaard -> Butterhuizen
+Label: 'continent' (samples: 3): Gonzen -> Europe, Mormont -> Europe, Mont Donon -> Europe
+Label: 'contributor to the creative work or subject' (samples: 2): Mr. Arrow -> T. Daniel Hofstedt, John Silver -> Ron Husband
+Label: 'conversion to SI unit' (samples: 3): hour -> 3600, week -> 604800, day -> 86400
+Label: 'cover art by' (samples: 3): Animal Magnetism -> Hipgnosis, Damned Damned Damned -> Barney Bubbles, Self Portrait -> Bob Dylan
+Label: 'designated as terrorist by' (samples: 3): Hezbollah -> Canada, Hezbollah -> Arab League, Hezbollah -> Israel
+Label: 'distributor' (samples: 3): Night Court -> Warner Bros. Television, Morbius -> Sony Pictures Releasing, Leave It to Beaver -> NBCUniversal Television Distribution
+Label: 'edition or translation of' (samples: 3): Too Much Love Will Kill You -> Too Much Love Will Kill You, Freden -> Peace, The Boys of Fall -> The Boys of Fall
+Label: 'editor-in-chief' (samples: 2): Laagendalsposten -> Edwin Wadd, The Guardian -> Katharine Viner
+Label: 'enemy of' (samples: 2): Metallo -> Superman, Marcus Wright -> Skynet
+Label: 'facet of' (samples: 3): First inauguration of Ulysses S. Grant -> Presidency of Ulysses S. Grant, Expedition 61 -> International Space Station, Expedition 60 -> International Space Station
+Label: 'family name identical to this given name' (samples: 3): Gillean -> Gillean, Bolingbroke -> Bolingbroke, Shelden -> Shelden
+Label: 'genetic association' (samples: 3): Guillain–Barré Syndrome -> PMP22, Wilson disease -> ATP7B, cataract -> GJA8
+Label: 'gross tonnage' (samples: 3): Cosco Africa -> 114394, Cosco America -> 114394, Silja Serenade -> 58376
+Label: 'has cause' (samples: 3): Guillain–Barré Syndrome -> Zika virus infection, Wilson disease -> genetics, cataract -> ultraviolet
+Label: 'has decorative pattern' (samples: 3): Appliqué inv. 848 -> floral pattern, Appliqué inv. 739 -> floral pattern, Appliqué inv. 734 -> floral pattern
+Label: 'head of state' (samples: 3): Malawi -> Peter Mutharika, Botswana -> Mokgweetsi Masisi, Niger -> Mahamadou Issoufou
+Label: 'home port' (samples: 3): MS Marco Polo -> Nassau, MS Renaissance -> Marseille, RMS Saxonia -> Liverpool
+Label: 'home world' (samples: 3): Raphael -> Earth, Leonardo -> Earth, Raphael -> Earth
+Label: 'illiterate population' (samples: 3): Darrang district -> 441461, Coimbatore district -> 822138, Cachar district -> 562489
+Label: 'inflows' (samples: 3): Lake Maggiore -> San Bernardino, Lake Maggiore -> Maggia, Lake Maggiore -> Ticino
+Label: 'instance of' (samples: 3): Spain at the 2018 FIFA World Cup -> Spain at the FIFA World Cup, Fisherman's Bastion -> terrace, Bundeswehrkrankenhaus -> medical organization
+Label: 'interested in' (samples: 3): Svenska Jägareförbundet -> hunting, Great Cranberry Historical Society, Maine -> history of Maine, Brownfield Historical Society, Maine -> history of Maine
+Label: 'languages spoken' (samples: 3): Luke Skywalker -> Galactic Basic, Palpatine -> Galactic Basic, Palpatine -> Galactic Basic
+Label: 'located in the ecclesiastical territorial entity' (samples: 2): Skivholme parish -> Skanderborg Provsti, Hoed -> Norddjurs Provsti
+Label: 'location of first performance' (samples: 2): Oberon -> Royal Opera House, Carmén -> Opéra-Comique
+Label: 'longitude of ascending node' (samples: 3): Eris -> 35.9045, Makemake -> 79.64, Haumea -> 122.109
+Label: 'lower flammable limit' (samples: 3): 1,4-dichlorobenzene -> 2.5, 1,3-butadiene -> 2.0, aniline -> 1.3
+Label: 'lyrics by' (samples: 3): Ciao Ciao -> Tony Hatch, My Way -> Paul Anka, Sentimentale -> Mike Stoller
+Label: 'maintained by' (samples: 3): Verrazzano-Narrows Bridge -> Metropolitan Transportation Authority, Japan National Route 499 -> Kagoshima Prefecture, Throgs Neck Bridge -> MTA Bridges and Tunnels
+Label: 'male population' (samples: 3): Traunstein -> 38957, Traunstein -> 38957, Hubaysh District -> 48953
+Label: 'mean anomaly' (samples: 3): Makemake -> 163.94, 2001 QD298 -> 68.07, 50000 Quaoar -> 281.7
+Label: 'name' (samples: 3): HD 104985 b -> Meztli, 42 Draconis b -> Orbitar, Nenque -> Nenque
+Label: 'narrator' (samples: 3): The Hunchback of Notre Dame -> Clopin, Peter Pan -> Tom Conway, Peter Pan -> Tom Conway
+Label: 'next higher rank' (samples: 3): Civil Defence Cross of Honour -> Nansen medal for Outstanding Research, George Cross -> Victoria Cross, King Haakon VII Freedom Cross -> Royal Norwegian Order of Merit
+Label: 'nominal GDP per capita' (samples: 3): Japan -> 38430, Thailand -> 6595, Thailand -> 6595
+Label: 'notable work' (samples: 3): EnjoyUp Games -> Rock 'N Racing Off Road, Cosmonaut Games -> 5 Spots Party, we.R.play -> Explottens
+Label: 'number of decimal digits' (samples: 3): 1051 -> 4, 1531 -> 4, 1201 -> 4
+Label: 'number of episodes' (samples: 2): D.I.C.E. -> 40, Persona 4: The Animation -> 26
+Label: 'number of platform faces' (samples: 3): Changying station -> 4, Nationaltheatret Station -> 4, Bibliothèque François Mitterrand Station -> 6
+Label: 'number of spoilt votes' (samples: 3): Volta Redonda mayoral election, 2016 - second round -> 8269, Twentieth Amendment of the Constitution of Ireland -> 109066, Ninth Amendment of the Constitution of Ireland -> 40162
+Label: 'official symbol' (samples: 2): Alberta -> Great Horned Owl, Alberta -> Great Horned Owl
+Label: 'officially opened by' (samples: 3): 1994 Winter Olympics -> Harald V of Norway, 1994 Winter Olympics -> Harald V of Norway, 1994 Winter Olympics -> Harald V of Norway
+Label: 'opposite of' (samples: 3): class -> individual, falsity -> truth, difference -> identity
+Label: 'orbital period' (samples: 3): Soyuz TM-7 -> 88.8, Soyuz TM-19 -> 92.48, Soyuz TM-19 -> 92.48
+Label: 'organization directed from the office or person' (samples: 3): Vice President of the United States -> United States Senate, White House Communications Director -> White House Office of Communications, mayor of Bilbao -> Bilbao municipality
+Label: 'parent astronomical body' (samples: 3): Terra Nova -> Eta Cassiopeiae, Axanar -> Epsilon Eridani, Axanar -> Epsilon Eridani
+Label: 'patron saint' (samples: 3): Basilica of Assumption and Saints Cyril and Methodius -> Virgin Mary, Basilica of the Assumption -> Virgin Mary, Basilica of Our Lady of the Assumption and St. Nicholas -> Virgin Mary
+Label: 'payload mass' (samples: 3): Helenic -> 3150, Emsmoon -> 6334, Tim -> 3450
+Label: 'place of death' (samples: 3): Travis -> North Stamford, Yan Yan -> Berlin Zoological Garden, Harambe -> Cincinnati Zoo and Botanical Garden
+Label: 'points goal scored by' (samples: 3): 1966 FIFA World Cup Final -> Geoff Hurst, 1966 FIFA World Cup Final -> Helmut Haller, 1956 FA Cup Final -> Noel Kinsey
+Label: 'powered by' (samples: 3): Norrtelje -> compound locomotive, Engelbrekt -> compound locomotive, McLaren 650S -> petrol engine
+Label: 'presenter' (samples: 3): Miss USA 2015 -> Todd Newton, Saturday Night Live -> Don Pardo, Family Feud -> Steve Harvey
+Label: 'producer' (samples: 3): Alexander and the Terrible, Horrible, No Good, Very Bad Day -> Lisa Henson, Alexander and the Terrible, Horrible, No Good, Very Bad Day -> Lisa Henson, When the Wind Blows -> Roger Waters
+Label: 'recorded at' (samples: 3): Sunshine of Your Love -> Atlantic Studios, SWLABR -> Atlantic Studios, Do They Know It's Christmas? -> Sarm West Studios
+Label: 'recording or performance of' (samples: 3): La Luna -> La Luna, Do What You Do -> Do What You Do, Summertime -> Summertime
+Label: 'referee' (samples: 3): 1873 FA Cup Final -> Alfred Stair, 1987 FA Cup Final -> Neil Midgley, 2011 FA Cup Final -> Martin Atkinson
+Label: 'relative' (samples: 3): Thomas Playford -> Thomas Playford, Blackjack Mulligan -> Bray Wyatt, Paul Castellano -> Richard S. Castellano
+Label: 'rotation period' (samples: 3): Eris -> 25.9, Makemake -> 22.48, Haumea -> 3.9154
+Label: 'service retirement' (samples: 3): LSWR 177-class no. 188 -> 1895-11-01, LSWR 177-class no. 179 -> 1895-04-01, LSWR 177-class no. 186 -> 1895-10-01
+Label: 'short name' (samples: 3): Transatlantic Records -> Transatlantic, Fourth International Workshop on Visualization and Interaction for Ontologies and Linked Data -> VOILA 2018, Maine -> ME
+Label: 'sibling' (samples: 3): Lisa Simpson -> Hugo Simpson, Bart Simpson -> Hugo Simpson, Kazuo Saki -> Shredder
+Label: 'spouse' (samples: 3): Aegina -> Actor, Erendis -> Tar-Aldarion, Epimetheus -> Pandora
+Label: 'statistical leader' (samples: 3): 2013 AFC Futsal Club Championship -> Kaoru Morioka, 2018-19 Ekstraklasa -> Igor Angulo, 2009 Thai Super Cup -> Hironori Saruta
+Label: 'subtitle' (samples: 3): Monument of nature? An ethnography of the World Heritage of Mt. Kenya -> An ethnography of the World Heritage of Mt. Kenya, Guardians of the Galaxy: Awesome Mix Vol. 1 – Original Motion Picture Soundtrack -> Original Motion Picture Soundtrack, Guardians of the Galaxy: Awesome Mix Vol. 1 – Original Motion Picture Soundtrack -> Original Motion Picture Soundtrack
+Label: 'target' (samples: 3): 2019 Pulwama attack -> Central Reserve Police Force, Christchurch mosque shootings -> Al Noor Mosque, Santa Fe High School shooting -> high school student
+Label: 'teams classification by points' (samples: 2): 2017 Giro d'Italia, Stage 14 -> Orica-Scott 2017, 2017 Giro d'Italia, Stage 18 -> Orica-Scott 2017
+Label: 'territory overlaps' (samples: 3): Klautzke-See und Waldmoore mit Kobbelke -> Klautzkesee und Waldmoore mit Kobbelke, Bagno mit Steinfurter Aa -> Am Bagno – Buchenberg, Auf dem Bockshorn -> Bockshorn
+Label: 'time of spacecraft orbit decay' (samples: 3): Hiten -> 1993-04-10, Lunar Atmosphere and Dust Environment Explorer -> 2014-04-17, Dawn -> 2012-01-01
+Label: 'translator' (samples: 3): Król Henryk IV. Część II -> Placyd Jankowski, Huckleberry Finns äventyr -> Petrus Hedberg, Błagalnice -> Jan Kasprowicz
+Label: 'tributary' (samples: 3): Naẖal Daliyya -> Nahal Tut, Nahal Hemar -> Nahal Kina, Nahal Sorek -> Naẖal Luz
+Label: 'tussenvoegsel' (samples: 3): de Lima -> de, de Jong -> de, de Alencar -> de
+Label: 'unemployment rate' (samples: 3): France -> 10.0, Czech Republic -> 3.4, Belgium -> 8.0
+Label: 'urban population' (samples: 3): Martur mandal -> 0, Janakavarampanguluru mandal -> 0, Racherla mandal -> 0
+Label: 'uses' (samples: 3): Plzeň -> street number, Olomouc -> street number, Ostrava -> street number
+Label: 'victory' (samples: 3): Alé Cipollini 2019 -> 2019 Women's Herald Sun Tour, Stage 1, Inter Milan -> 1988–89 Serie A, Inter Milan -> 2010–11 Coppa Italia
+Label: 'wavelength' (samples: 2): AMiBA -> 3.0, AMiBA -> 3.0
+Label: 'young rider classification' (samples: 3): 2018 Settimana Internazionale di Coppi e Bartali -> Lorenzo Rota, 2018 Settimana Internazionale di Coppi e Bartali -> Lorenzo Rota, 2018 Deutschland Tour -> Nils Politt

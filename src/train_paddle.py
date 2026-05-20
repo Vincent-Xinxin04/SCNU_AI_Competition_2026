@@ -257,13 +257,28 @@ def dynamic_collate_fn(samples):
 
 
 # ==================== Model ====================
+class PrototypeClassifier(nn.Layer):
+    def __init__(self, hidden_size, num_labels):
+        super().__init__()
+        self.proto_vectors = nn.Parameter(
+            paddle.randn([num_labels, hidden_size]) * 0.01
+        )
+    
+    def forward(self, features):
+        norm_features = features / paddle.norm(features, axis=1, keepdim=True) + 1e-8
+        norm_protos = self.proto_vectors / paddle.norm(self.proto_vectors, axis=1, keepdim=True) + 1e-8
+        similarities = paddle.matmul(norm_features, norm_protos.t())
+        return similarities
+
 class CPAModel(nn.Layer):
-    def __init__(self, model_name, num_labels, dropout_rate=0.1, pooling_strategy='cls', use_multi_head=False):
+    def __init__(self, model_name, num_labels, dropout_rate=0.1, pooling_strategy='cls', use_multi_head=False, use_prototype=False, prototype_weight=0.3):
         super().__init__()
         self.encoder = AutoModel.from_pretrained(model_name)
         self.dropout = nn.Dropout(dropout_rate)
         self.pooling_strategy = pooling_strategy
         self.use_multi_head = use_multi_head
+        self.use_prototype = use_prototype
+        self.prototype_weight = prototype_weight
 
         hidden_size = None
         if hasattr(self.encoder, 'config'):
@@ -301,6 +316,10 @@ class CPAModel(nn.Layer):
             )
         else:
             self.classifier = nn.Linear(classifier_input_dim, num_labels)
+        
+        # 原型分类器
+        if use_prototype:
+            self.proto_classifier = PrototypeClassifier(classifier_input_dim, num_labels)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
@@ -358,6 +377,12 @@ class CPAModel(nn.Layer):
             pooled = self.layer_norm(pooled)
         
         logits = self.classifier(pooled)
+        
+        # 融合原型分类
+        if self.use_prototype:
+            proto_logits = self.proto_classifier(pooled)
+            logits = (1 - self.prototype_weight) * logits + self.prototype_weight * proto_logits
+        
         return logits
 
 
@@ -490,6 +515,56 @@ def save_label_classes(label_encoder, save_dir):
             f.write(f'{label}\n')
 
 
+def save_checkpoint(model, optimizer, lr_scheduler, epoch, stage, best_score, patience_counter, save_dir):
+    """保存训练断点，支持两段训练"""
+    checkpoint = {
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'lr_scheduler_state_dict': lr_scheduler.state_dict(),
+        'epoch': epoch,
+        'stage': stage,  # 1 or 2
+        'best_score': best_score,
+        'patience_counter': patience_counter,
+        'timestamp': datetime.now().strftime('%Y%m%d_%H%M%S')
+    }
+    checkpoint_path = os.path.join(save_dir, f'checkpoint_stage{stage}_epoch{epoch+1}.pdparams')
+    paddle.save(checkpoint, checkpoint_path)
+    logging.info(f'Checkpoint saved: {checkpoint_path}')
+    return checkpoint_path
+
+
+def load_checkpoint(checkpoint_path, model, optimizer=None, lr_scheduler=None):
+    """加载训练断点"""
+    if not os.path.exists(checkpoint_path):
+        logging.error(f'Checkpoint not found: {checkpoint_path}')
+        return None
+    
+    checkpoint = paddle.load(checkpoint_path)
+    model.set_state_dict(checkpoint['model_state_dict'])
+    
+    if optimizer is not None and 'optimizer_state_dict' in checkpoint:
+        optimizer.set_state_dict(checkpoint['optimizer_state_dict'])
+    
+    if lr_scheduler is not None and 'lr_scheduler_state_dict' in checkpoint:
+        lr_scheduler.set_state_dict(checkpoint['lr_scheduler_state_dict'])
+    
+    epoch = checkpoint.get('epoch', 0)
+    stage = checkpoint.get('stage', 1)
+    best_score = checkpoint.get('best_score', 0.0)
+    patience_counter = checkpoint.get('patience_counter', 0)
+    
+    logging.info(f'Checkpoint loaded: {checkpoint_path}')
+    logging.info(f'Resuming from Stage {stage}, Epoch {epoch + 1}')
+    logging.info(f'Best score so far: {best_score:.4f}')
+    
+    return {
+        'epoch': epoch,
+        'stage': stage,
+        'best_score': best_score,
+        'patience_counter': patience_counter
+    }
+
+
 # ==================== Main Training Loop ====================
 def run_training(args):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -589,7 +664,10 @@ def run_training(args):
 
     # 5. 模型初始化
     logging.info("Step 5: Initializing model...")
-    model = CPAModel(args.shortcut_name, num_classes, args.dropout_rate, args.pooling_strategy, args.use_multi_head)
+    model = CPAModel(args.shortcut_name, num_classes, args.dropout_rate, args.pooling_strategy, args.use_multi_head, args.use_prototype, args.prototype_weight)
+    
+    if args.use_prototype:
+        logging.info(f"Using Prototype Learning (weight={args.prototype_weight})")
     
     if args.init_checkpoint is not None:
         logging.info(f"Loading checkpoint from {args.init_checkpoint}...")
@@ -734,132 +812,42 @@ def run_training(args):
     patience_counter = 0
     fgm = FGM(model) if args.use_fgm else None
 
-    if args.use_two_stage_training:
-        logging.info("=" * 60)
-        logging.info("Two-Stage Training Mode")
-        logging.info("=" * 60)
-        
-        # ========== Stage 1: Pretrain on common classes ==========
-        logging.info(f"\n[Stage 1] Pretraining on common classes (samples >= {args.stage1_threshold})...")
-        
-        train_label_counts = train_df['label'].value_counts()
-        common_labels = train_label_counts[train_label_counts >= args.stage1_threshold].index
-        df_common = train_df[train_df['label'].isin(common_labels)]
-        
-        logging.info(f"[Stage 1] Common labels: {len(common_labels)}, samples: {len(df_common)}")
-        
-        stage1_train_loader = DataLoader(
-            RelationDataset(df_common, tokenizer, label_encoder, args.max_length, augment=args.data_augment),
-            batch_size=args.batch_size,
-            shuffle=True,
-            collate_fn=dynamic_collate_fn,
-            num_workers=args.num_workers,
-            return_list=True,
-        )
-        
-        stage1_lr_scheduler = paddle.optimizer.lr.CosineAnnealingDecay(
-            learning_rate=args.stage1_lr,
-            T_max=max(1, len(stage1_train_loader) * args.stage1_epochs),
-            eta_min=1e-7
-        )
-        stage1_lr_scheduler = paddle.optimizer.lr.LinearWarmup(
-            learning_rate=stage1_lr_scheduler,
-            warmup_steps=int(len(stage1_train_loader) * args.stage1_epochs * args.warmup_ratio),
-            start_lr=0.0,
-            end_lr=args.stage1_lr
-        )
-        stage1_optimizer = paddle.optimizer.AdamW(
-            learning_rate=stage1_lr_scheduler,
-            parameters=model.parameters(),
-            weight_decay=args.weight_decay
-        )
-        
-        for epoch in range(args.stage1_epochs):
-            avg_loss = train_one_epoch(
-                model, stage1_train_loader, stage1_optimizer, stage1_lr_scheduler,
-                criterion, fgm, ema, scaler, use_amp, device, epoch, args.stage1_epochs, '[Stage 1]'
-            )
-            val_acc, weighted_score = evaluate(model, val_loader, use_amp, ema)
-            logging.info(f'[Stage 1] Epoch {epoch + 1} | Loss: {avg_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
-        
-        logging.info("[Stage 1] Pretraining completed!")
-        
-        # ========== Stage 2: Finetune on all data ==========
-        logging.info(f"\n[Stage 2] Finetuning on all data (lr={args.stage2_lr})...")
-        logging.info(f"[Stage 2] All labels: {num_classes}, samples: {len(train_df)}")
-        
-        stage2_total_epochs = args.stage2_epochs
-        stage2_lr_scheduler = paddle.optimizer.lr.CosineAnnealingDecay(
-            learning_rate=args.stage2_lr,
-            T_max=max(1, len(train_loader) * stage2_total_epochs),
-            eta_min=1e-7
-        )
-        stage2_lr_scheduler = paddle.optimizer.lr.LinearWarmup(
-            learning_rate=stage2_lr_scheduler,
-            warmup_steps=int(len(train_loader) * stage2_total_epochs * args.warmup_ratio),
-            start_lr=0.0,
-            end_lr=args.stage2_lr
-        )
-        stage2_optimizer = paddle.optimizer.AdamW(
-            learning_rate=stage2_lr_scheduler,
-            parameters=model.parameters(),
-            weight_decay=args.weight_decay
-        )
-        
-        for epoch in range(stage2_total_epochs):
-            avg_loss = train_one_epoch(
-                model, train_loader, stage2_optimizer, stage2_lr_scheduler,
-                criterion, fgm, ema, scaler, use_amp, device, epoch, stage2_total_epochs, '[Stage 2]'
-            )
-            val_acc, weighted_score = evaluate(model, val_loader, use_amp, ema)
-            logging.info(f'[Stage 2] Epoch {epoch + 1} | Loss: {avg_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
-            
-            if weighted_score > best_score:
-                best_score = weighted_score
-                patience_counter = 0
-                paddle.save(model.state_dict(), os.path.join(save_dir, 'best_model.pdparams'))
-                try:
-                    tokenizer.save_pretrained(save_dir)
-                except Exception:
-                    pass
-                logging.info(f'Best model saved! (Weighted Score: {best_score:.4f})')
-            else:
-                patience_counter += 1
-                logging.info(f'Early stop count: {patience_counter}/{args.patience}')
-                if patience_counter == args.patience:
-                    logging.info(f'Early stopping after {args.patience} epochs without improvement')
-                    break
-        
-        logging.info("[Stage 2] Finetuning completed!")
-        logging.info("=" * 60)
-        logging.info("Two-Stage Training finished!")
-        logging.info("=" * 60)
+    # Single-stage training with resume support
+    start_epoch = 0
+    if args.resume_from_checkpoint is not None:
+        resume_info = load_checkpoint(args.resume_from_checkpoint, model, optimizer, lr_scheduler)
+        if resume_info is not None:
+            start_epoch = resume_info['epoch'] + 1
+            best_score = resume_info['best_score']
+            patience_counter = resume_info.get('patience_counter', 0)
+            logging.info(f"Resuming from epoch {start_epoch}")
     
-    else:
-        # Single-stage training (original behavior)
-        for epoch in range(args.epochs):
-            avg_loss = train_one_epoch(
-                model, train_loader, optimizer, lr_scheduler,
-                criterion, fgm, ema, scaler, use_amp, device, epoch, args.epochs
-            )
-            val_acc, weighted_score = evaluate(model, val_loader, use_amp, ema)
-            logging.info(f'Epoch {epoch + 1} | Loss: {avg_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
+    for epoch in range(start_epoch, args.epochs):
+        avg_loss = train_one_epoch(
+            model, train_loader, optimizer, lr_scheduler,
+            criterion, fgm, ema, scaler, use_amp, device, epoch, args.epochs
+        )
+        val_acc, weighted_score = evaluate(model, val_loader, use_amp, ema)
+        logging.info(f'Epoch {epoch + 1} | Loss: {avg_loss:.4f} | Val Acc: {val_acc:.4f} | Weighted Score: {weighted_score:.4f}')
+        
+        if args.save_checkpoint_epochs > 0 and (epoch + 1) % args.save_checkpoint_epochs == 0:
+            save_checkpoint(model, optimizer, lr_scheduler, epoch, 0, best_score, patience_counter, save_dir)
 
-            if weighted_score > best_score:
-                best_score = weighted_score
-                patience_counter = 0
-                paddle.save(model.state_dict(), os.path.join(save_dir, 'best_model.pdparams'))
-                try:
-                    tokenizer.save_pretrained(save_dir)
-                except Exception:
-                    pass
-                logging.info(f'Best model saved! (Weighted Score: {best_score:.4f})')
-            else:
-                patience_counter += 1
-                logging.info(f'Early stop count: {patience_counter}/{args.patience}')
-                if patience_counter == args.patience:
-                    logging.info(f'Early stopping after {args.patience} epochs without improvement')
-                    break
+        if weighted_score > best_score:
+            best_score = weighted_score
+            patience_counter = 0
+            paddle.save(model.state_dict(), os.path.join(save_dir, 'best_model.pdparams'))
+            try:
+                tokenizer.save_pretrained(save_dir)
+            except Exception:
+                pass
+            logging.info(f'Best model saved! (Weighted Score: {best_score:.4f})')
+        else:
+            patience_counter += 1
+            logging.info(f'Early stop count: {patience_counter}/{args.patience}')
+            if patience_counter == args.patience:
+                logging.info(f'Early stopping after {args.patience} epochs without improvement')
+                break
 
     logging.info(f'Training finished. Best weighted score: {best_score:.4f}')
 
@@ -912,6 +900,10 @@ if __name__ == '__main__':
                         help='EMA decay rate')
     parser.add_argument('--use_multi_head', action='store_true', default=False,
                         help='Use multi-head attention for feature fusion')
+    parser.add_argument('--use_prototype', action='store_true', default=False,
+                        help='Enable prototype learning for few-shot classification')
+    parser.add_argument('--prototype_weight', type=float, default=0.3,
+                        help='Weight for prototype classifier (0-1)')
     parser.add_argument('--use_amp', action='store_true', default=False,
                         help='Enable automatic mixed precision training')
     parser.add_argument('--lr_scheduler', type=str, default='cosine',
@@ -931,9 +923,17 @@ if __name__ == '__main__':
     parser.add_argument('--stage1_threshold', type=int, default=20,
                         help='Sample threshold for stage 1: classes with >= this many samples are used in stage 1')
     
+    # Checkpoint parameters
+    parser.add_argument('--save_checkpoint_epochs', type=int, default=2,
+                        help='Save checkpoint every N epochs')
+    
     # Device parameters
     parser.add_argument('--device', type=str, default='auto',
                         help='Device to use: auto, cpu, gpu, xpu, iluvatar_gpu')
+    
+    # Checkpoint parameters
+    parser.add_argument('--resume_from_checkpoint', type=str, default=None,
+                        help='Path to checkpoint file for resuming training')
     
     args = parser.parse_args()
     run_training(args)
