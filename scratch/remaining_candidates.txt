@@ -1,4 +1,8 @@
-Remaining missing labels count: 79
+Remaining missing labels count: 53
+
+=== Label: 'CJKV variant character' (Train samples: 5) ===
+  Candidate: 海 -> Big5 character (Current Pred: subclass of)
+    Match Type: Exact Subject Match | Reason: Train Subj: '海'
 
 === Label: 'VAT-rate' (Train samples: 22) ===
   Candidate: Italy -> 16 (Current Pred: compulsory education (maximum age))
@@ -9,7 +13,7 @@ Remaining missing labels count: 79
     Match Type: Exact Subject Match | Reason: Train Subj: 'Czech Republic'
   Candidate: Japan -> Albania (Current Pred: diplomatic relation)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan'
-  Candidate: Paraguay -> Mario Abdo Benítez (Current Pred: head of government)
+  Candidate: Paraguay -> Mario Abdo Benítez (Current Pred: head of state)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Paraguay'
   Candidate: Schwaz -> 20.0 (Current Pred: elevation above sea level)
     Match Type: Exact Object Match | Reason: Train Obj: '20.0'
@@ -45,7 +49,7 @@ Remaining missing labels count: 79
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan'
   Candidate: Italy -> Italian Parliament (Current Pred: legislative body)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Italy'
-  Candidate: Kazakhstan -> Kazakhstan Temir Zholy (Current Pred: head of government)
+  Candidate: Kazakhstan -> Kazakhstan Temir Zholy (Current Pred: owner of)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Kazakhstan'
   Candidate: Slovakia -> Eastern Europe (Current Pred: part of)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Slovakia'
@@ -60,12 +64,8 @@ Remaining missing labels count: 79
   Candidate: Morocco -> -23.9 (Current Pred: minimum temperature record)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Morocco'
 
-=== Label: 'World Health Organisation International Nonproprietary Name' (Train samples: 2) ===
-  Candidate: propranolol -> Australian pregnancy category C (Current Pred: pregnancy category)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'propranolol'
-
 === Label: 'absolute magnitude' (Train samples: 10) ===
-  Candidate: 2001 QX297 -> 309.4 (Current Pred: event distance)
+  Candidate: 2001 QX297 -> 309.4 (Current Pred: orbital period)
     Match Type: Exact Subject Match | Reason: Train Subj: '2001 QX297'
   Candidate: Gliese 777 -> -45.14 (Current Pred: radial velocity)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Gliese 777'
@@ -95,56 +95,6 @@ Remaining missing labels count: 79
     Match Type: Exact Subject Match | Reason: Train Subj: 'Beauty and the Beast'
   Candidate: View near the Usk at Crickhowell -> 1800-01-01 (Current Pred: inception)
     Match Type: Exact Subject Match | Reason: Train Subj: 'View near the Usk at Crickhowell'
-
-=== Label: 'basin country' (Train samples: 19) ===
-  Candidate: Crater Lake -> 1883.0 (Current Pred: area)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Crater Lake'
-  Candidate: Kurdistan Workers' Party -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: United States Department of Education -> United States of America (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'United States of America'
-  Candidate: Crater Lake -> 9.6 (Current Pred: length)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Crater Lake'
-  Candidate: Bahçeli Kayaları -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: Too Much Love Will Kill You -> United States of America (Current Pred: country of origin)
-    Match Type: Exact Object Match | Reason: Train Obj: 'United States of America'
-  Candidate: Drivavassdraget -> 2488.04 (Current Pred: watershed area)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Drivavassdraget'
-  Candidate: RV MTA Turkuaz -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: Dead Horse -> United States of America (Current Pred: country of origin)
-    Match Type: Exact Object Match | Reason: Train Obj: 'United States of America'
-  Candidate: Fenerbahçe Women's Volleyball -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: İller Bankası Women's Volleyball -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: Lake Shala -> 1558.0 (Current Pred: area)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Lake Shala'
-  Candidate: Namsenvassdraget -> Namsenfjorden (Current Pred: mouth of the watercourse)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Namsenvassdraget'
-  Candidate: Bornova Ice Sports Hall -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: RV Derinsu -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: Beşiktaş Women's Volleyball Team -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: The Boys of Fall -> United States of America (Current Pred: country of origin)
-    Match Type: Exact Object Match | Reason: Train Obj: 'United States of America'
-  Candidate: Sarıyer Belediyesi SK -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-  Candidate: Bosphorus Istanbul Cup 2018 - senior ice dance rhythm dance -> Turkey (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Turkey'
-
-=== Label: 'catalog' (Train samples: 27) ===
-  Candidate: Design for a decorative detail of a ceiling in Neo-Classical style -> drawing (Current Pred: fabrication method)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Design for a decorative detail of a ceiling in Neo-Classical style'
-  Candidate: Design for a portal -> drawing (Current Pred: fabrication method)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Design for a portal'
-  Candidate: Optics Express -> 1997-01-01 (Current Pred: inception)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Optics Express'
-  Candidate: Bandiera gialla -> Artie Kornfeld (Current Pred: creator)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Bandiera gialla'
 
 === Label: 'commissioned by' (Train samples: 20) ===
   Candidate: RB 113 -> Leipzig Hauptbahnhof (Current Pred: terminus)
@@ -211,48 +161,8 @@ Remaining missing labels count: 79
 === Label: 'cover art by' (Train samples: 3) ===
   Candidate: Self Portrait -> Self-portrait (Current Pred: title)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Self Portrait'
-  Candidate: Damned Damned Damned -> Damned (Current Pred: title)
+  Candidate: Damned Damned Damned -> Damned (Current Pred: performer)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Damned Damned Damned'
-
-=== Label: 'designated as terrorist by' (Train samples: 4) ===
-  Candidate: 1990 Plume d’Or -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Building 18011-20 -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Tayibe -> Israel (Current Pred: country of origin)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Building 18010-18 -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Building 18010-91 -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Mateh Binyamin Regional Council -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Khan al-Shuna -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Hof Aza Regional Council -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Brenner Regional Council -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Building 18011-85 -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Kafr Qasim -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Building 18011-122 -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Ligat Nashim Rishona -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Ashkelon -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Jerusalem -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Hod HaSharon -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: Building 18110-1 -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: 2017 Har Adar shooting -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
-  Candidate: National Library of Israel ID -> Israel (Current Pred: country)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Israel'
 
 === Label: 'distributor' (Train samples: 11) ===
   Candidate: Wonder Woman 1984 -> color (Current Pred: color)
@@ -273,14 +183,6 @@ Remaining missing labels count: 79
     Match Type: Exact Subject Match | Reason: Train Subj: 'Dead Horse'
   Candidate: The Boys of Fall -> United States of America (Current Pred: country of origin)
     Match Type: Exact Subject Match | Reason: Train Subj: 'The Boys of Fall'
-
-=== Label: 'enemy of' (Train samples: 2) ===
-  Candidate: Metallo -> English (Current Pred: language of work or name)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Metallo'
-  Candidate: Marcus Wright -> English (Current Pred: language of work or name)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Marcus Wright'
-  Candidate: Metallo -> Brian Austin Green (Current Pred: performer)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Metallo'
 
 === Label: 'facet of' (Train samples: 29) ===
   Candidate: France at the 2018 FIFA World Cup -> 3 (Current Pred: ranking)
@@ -328,24 +230,6 @@ Remaining missing labels count: 79
   Candidate: Appliqué inv. 739 -> appliqué (Current Pred: fabrication method)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Appliqué inv. 739'
 
-=== Label: 'head of state' (Train samples: 8) ===
-  Candidate: Botswana -> 2.836 (Current Pred: total fertility rate)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Botswana'
-  Candidate: Lesotho -> outline of Lesotho (Current Pred: Wikimedia outline)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Lesotho'
-  Candidate: Central African Republic -> 52.171 (Current Pred: life expectancy)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Central African Republic'
-
-=== Label: 'home port' (Train samples: 13) ===
-  Candidate: SS Flandre -> 784 (Current Pred: maximum capacity)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'SS Flandre'
-  Candidate: RMS Queen Mary -> 1936-01-01 (Current Pred: service entry)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'RMS Queen Mary'
-  Candidate: SS Nieuw Amsterdam -> 231.19 (Current Pred: length)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'SS Nieuw Amsterdam'
-  Candidate: 1973 Swedish Open Badminton Championships -> Gothenburg (Current Pred: location)
-    Match Type: Exact Object Match | Reason: Train Obj: 'Gothenburg'
-
 === Label: 'inflows' (Train samples: 5) ===
   Candidate: Lake Maggiore -> 41.37 (Current Pred: area)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Lake Maggiore'
@@ -357,6 +241,10 @@ Remaining missing labels count: 79
 === Label: 'languages spoken' (Train samples: 4) ===
   Candidate: Luke Skywalker -> Yoda (Current Pred: student of)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Luke Skywalker'
+
+=== Label: 'level of description' (Train samples: 13) ===
+  Candidate: Alphonse Allard Fonds -> fonds (Current Pred: instance of)
+    Match Type: Exact Subject Match | Reason: Train Subj: 'Alphonse Allard Fonds'
 
 === Label: 'located in the ecclesiastical territorial entity' (Train samples: 2) ===
   Candidate: Skivholme parish -> Skanderborg Municipality (Current Pred: located in the administrative territorial entity)
@@ -371,11 +259,11 @@ Remaining missing labels count: 79
     Match Type: Exact Object Match | Reason: Train Obj: '2.0'
 
 === Label: 'lyrics by' (Train samples: 3) ===
-  Candidate: My Way -> SUISA Works database (Current Pred: subject item of this property)
+  Candidate: My Way -> SUISA Works database (Current Pred: catalog)
     Match Type: Exact Subject Match | Reason: Train Subj: 'My Way'
 
 === Label: 'maintained by' (Train samples: 22) ===
-  Candidate: Japan National Route 436 -> maritime transport (Current Pred: industry)
+  Candidate: Japan National Route 436 -> maritime transport (Current Pred: uses)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan National Route 436'
   Candidate: Golden Gate Bridge -> Joseph Strauss (Current Pred: structural engineer)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Golden Gate Bridge'
@@ -385,7 +273,7 @@ Remaining missing labels count: 79
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan National Route 57'
   Candidate: Ōsumi Province -> Kagoshima Prefecture (Current Pred: located in present-day administrative territorial entity)
     Match Type: Exact Object Match | Reason: Train Obj: 'Kagoshima Prefecture'
-  Candidate: Japan National Route 197 -> maritime transport (Current Pred: industry)
+  Candidate: Japan National Route 197 -> maritime transport (Current Pred: uses)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan National Route 197'
   Candidate: Throgs Neck Bridge -> Interstate 295 (Current Pred: carries)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Throgs Neck Bridge'
@@ -395,7 +283,7 @@ Remaining missing labels count: 79
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan National Route 57'
   Candidate: Japan National Route 499 -> Nagasaki Prefectural Road Route 34 (Current Pred: partially coincident with)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan National Route 499'
-  Candidate: Japan National Route 350 -> maritime transport (Current Pred: industry)
+  Candidate: Japan National Route 350 -> maritime transport (Current Pred: uses)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan National Route 350'
   Candidate: Japan National Route 350 -> road (Current Pred: terminus location)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Japan National Route 350'
@@ -413,12 +301,6 @@ Remaining missing labels count: 79
     Match Type: Exact Subject Match | Reason: Train Subj: 'CDKN2A p16 EXPRESSION'
   Candidate: CDKN2A p16 EXPRESSION -> CDKN2A (Current Pred: biological variant of)
     Match Type: Exact Subject Match | Reason: Train Subj: 'CDKN2A p16 EXPRESSION'
-
-=== Label: 'next higher rank' (Train samples: 10) ===
-  Candidate: King Haakon VII Freedom Cross -> 1945-05-18 (Current Pred: inception)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'King Haakon VII Freedom Cross'
-  Candidate: Meritorious Service Cross -> Medal of Military Valour (Current Pred: next lower rank)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Meritorious Service Cross'
 
 === Label: 'nominal GDP per capita' (Train samples: 6) ===
   Candidate: Italy -> 16 (Current Pred: compulsory education (maximum age))
@@ -508,46 +390,12 @@ Remaining missing labels count: 79
   Candidate: Alberta -> Good Friday (Current Pred: public holiday)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Alberta'
 
-=== Label: 'officially opened by' (Train samples: 14) ===
-  Candidate: 1994 Winter Olympics -> figure skating at the 1994 Winter Olympics (Current Pred: has part)
-    Match Type: Exact Subject Match | Reason: Train Subj: '1994 Winter Olympics'
-  Candidate: 1994 Winter Olympics -> Nordic skiing at the 1994 Winter Olympics (Current Pred: has part)
-    Match Type: Exact Subject Match | Reason: Train Subj: '1994 Winter Olympics'
-  Candidate: 1994 Winter Olympics -> Freestyle skiing at the 1994 Winter Olympics (Current Pred: has part)
-    Match Type: Exact Subject Match | Reason: Train Subj: '1994 Winter Olympics'
-  Candidate: 1994 Winter Olympics -> Luge at the 1994 Winter Olympics (Current Pred: has part)
-    Match Type: Exact Subject Match | Reason: Train Subj: '1994 Winter Olympics'
-  Candidate: 1994 Winter Olympics -> Ski jumping at the 1994 Winter Olympics (Current Pred: has part)
-    Match Type: Exact Subject Match | Reason: Train Subj: '1994 Winter Olympics'
-  Candidate: 1994 Winter Olympics -> Nordic combined at the 1994 Winter Olympics (Current Pred: has part)
-    Match Type: Exact Subject Match | Reason: Train Subj: '1994 Winter Olympics'
-
-=== Label: 'orbital period' (Train samples: 22) ===
-  Candidate: Gliese 436 b -> 0.0291 (Current Pred: semi-major axis of an orbit)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Gliese 436 b'
-  Candidate: Neubrügg -> 92.2 (Current Pred: area)
-    Match Type: Exact Object Match | Reason: Train Obj: '92.2'
-  Candidate: 87 Sylvia -> 5.184 (Current Pred: orbital inclination)
-    Match Type: Exact Subject Match | Reason: Train Subj: '87 Sylvia'
-  Candidate: 87 Sylvia -> 73.0583132800432 (Current Pred: right ascension)
-    Match Type: Exact Subject Match | Reason: Train Subj: '87 Sylvia'
-  Candidate: Soyuz TM-22 -> 15471705 (Current Pred: duration)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Soyuz TM-22'
-  Candidate: Soyuz TM-14 -> 373 (Current Pred: periapsis)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Soyuz TM-14'
-  Candidate: Soyuz TM-21 -> Soyuz TM-20 (Current Pred: follows)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Soyuz TM-21'
-  Candidate: Soyuz TM-7 -> 235.0 (Current Pred: apoapsis)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Soyuz TM-7'
-  Candidate: HD 109749 b -> radial velocity (Current Pred: discovery method)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'HD 109749 b'
-
 === Label: 'organization directed from the office or person' (Train samples: 3) ===
   Candidate: mayor of Bilbao -> 1836-01-01 (Current Pred: inception)
     Match Type: Exact Subject Match | Reason: Train Subj: 'mayor of Bilbao'
 
 === Label: 'powered by' (Train samples: 18) ===
-  Candidate: Norrtelje -> 8.0 (Current Pred: length)
+  Candidate: Norrtelje -> 8.0 (Current Pred: beam)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Norrtelje'
   Candidate: Ferrari GTC4Lusso -> 1980.0 (Current Pred: width)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Ferrari GTC4Lusso'
@@ -566,54 +414,6 @@ Remaining missing labels count: 79
   Candidate: Saturday Night Live -> Beth McCarthy-Miller (Current Pred: director)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Saturday Night Live'
 
-=== Label: 'producer' (Train samples: 32) ===
-  Candidate: Wonder Woman 1984 -> color (Current Pred: color)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Wonder Woman 1984'
-  Candidate: Man on the Moon -> Reveal (Current Pred: tracklist)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Man on the Moon'
-  Candidate: Alice Through the Looking Glass -> 170000000 (Current Pred: cost)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Alice Through the Looking Glass'
-  Candidate: Saint-Cyr -> classical music (Current Pred: genre)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Saint-Cyr'
-  Candidate: Alexander and the Terrible, Horrible, No Good, Very Bad Day -> Suitable for all audiences (Current Pred: ICAA rating)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Alexander and the Terrible, Horrible, No Good, Very Bad Day'
-  Candidate: An Unearthly Child -> 1963-11-23 (Current Pred: publication date)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'An Unearthly Child'
-  Candidate: Cinderella -> Suitable for all audiences (Current Pred: ICAA rating)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Cinderella'
-  Candidate: The BFG -> Suitable for all audiences (Current Pred: ICAA rating)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'The BFG'
-  Candidate: Process -> classical music (Current Pred: genre)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Process'
-  Candidate: Morbius -> Matt Sazama (Current Pred: screenwriter)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Morbius'
-  Candidate: Family Guy: Live in Vegas -> various artists (Current Pred: performer)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Family Guy: Live in Vegas'
-  Candidate: The BFG -> Particularly suitable for kids (Current Pred: ICAA rating)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'The BFG'
-  Candidate: Star Wars: Episode I – The Phantom Menace -> 2.35:1 (Current Pred: aspect ratio)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Star Wars: Episode I – The Phantom Menace'
-  Candidate: Cinderella -> 2.35:1 (Current Pred: aspect ratio)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Cinderella'
-  Candidate: The BFG -> 2.35:1 (Current Pred: aspect ratio)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'The BFG'
-  Candidate: N'oublie pas que tu vas mourir -> classical music (Current Pred: genre)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'N'oublie pas que tu vas mourir'
-  Candidate: Star Wars Episode IV: A New Hope -> classical music (Current Pred: genre)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Star Wars Episode IV: A New Hope'
-  Candidate: N'oublie pas que tu vas mourir -> Antártida (Current Pred: located in the administrative territorial entity)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'N'oublie pas que tu vas mourir'
-  Candidate: Alexander and the Terrible, Horrible, No Good, Very Bad Day -> 2.35:1 (Current Pred: aspect ratio)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Alexander and the Terrible, Horrible, No Good, Very Bad Day'
-
-=== Label: 'referee' (Train samples: 6) ===
-  Candidate: 2008 FA Cup Final -> 89874 (Current Pred: attendance)
-    Match Type: Exact Subject Match | Reason: Train Subj: '2008 FA Cup Final'
-  Candidate: 1873 FA Cup Final -> 1872 FA Cup Final (Current Pred: follows)
-    Match Type: Exact Subject Match | Reason: Train Subj: '1873 FA Cup Final'
-  Candidate: 1987 FA Cup Final -> Clive Allen (Current Pred: points goal scored by)
-    Match Type: Exact Subject Match | Reason: Train Subj: '1987 FA Cup Final'
-
 === Label: 'service retirement' (Train samples: 6) ===
   Candidate: LSWR 177-class no. 188 -> 2-4-0WT (Current Pred: wheel arrangement)
     Match Type: Exact Subject Match | Reason: Train Subj: 'LSWR 177-class no. 188'
@@ -629,28 +429,6 @@ Remaining missing labels count: 79
     Match Type: Exact Subject Match | Reason: Train Subj: 'Maine'
   Candidate: Palau -> 120 (Current Pred: mains voltage)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Palau'
-
-=== Label: 'sibling' (Train samples: 21) ===
-  Candidate: Krishna -> Samba (Current Pred: part of)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Krishna'
-  Candidate: Sita -> female (Current Pred: sex or gender)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Sita'
-  Candidate: Lisa Simpson -> female (Current Pred: sex or gender)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Lisa Simpson'
-  Candidate: Delirium -> female (Current Pred: sex or gender)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Delirium'
-
-=== Label: 'spouse' (Train samples: 19) ===
-  Candidate: Erendis -> female (Current Pred: sex or gender)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Erendis'
-  Candidate: Barry Allen -> Patty Spivot (Current Pred: unmarried partner)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Barry Allen'
-  Candidate: Éowyn -> Théodwyn (Current Pred: mother)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Éowyn'
-  Candidate: Tar-Ancalimë -> female (Current Pred: sex or gender)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Tar-Ancalimë'
-  Candidate: Éowyn -> female (Current Pred: sex or gender)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Éowyn'
 
 === Label: 'stage classification' (Train samples: 15) ===
   Candidate: 2018 Volta a la Comunitat Valenciana, Stage 3 -> Calp (Current Pred: destination point)
@@ -686,14 +464,6 @@ Remaining missing labels count: 79
   Candidate: 2012 Irish Badminton Championships -> 2012-01-01 (Current Pred: point in time)
     Match Type: Exact Object Match | Reason: Train Obj: '2012-01-01'
 
-=== Label: 'translator' (Train samples: 8) ===
-  Candidate: Persowie -> public domain (Current Pred: copyright status)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Persowie'
-  Candidate: Król Henryk VI. Część I -> Kraków (Current Pred: place of publication)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Król Henryk VI. Część I'
-  Candidate: Król Henryk V -> Kraków (Current Pred: place of publication)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Król Henryk V'
-
 === Label: 'unemployment rate' (Train samples: 6) ===
   Candidate: Czech Republic -> Eastern Europe (Current Pred: part of)
     Match Type: Exact Subject Match | Reason: Train Subj: 'Czech Republic'
@@ -707,68 +477,18 @@ Remaining missing labels count: 79
     Match Type: Exact Object Match | Reason: Train Obj: '10.0'
   Candidate: Buk lesní v Třebovicích -> 22.0 (Current Pred: height)
     Match Type: Exact Object Match | Reason: Train Obj: '22.0'
-  Candidate: Mount Carmel -> 8.0 (Current Pred: elevation above sea level)
+  Candidate: Mount Carmel -> 8.0 (Current Pred: width)
     Match Type: Exact Object Match | Reason: Train Obj: '8.0'
   Candidate: Caló de S'Estaca -> 8.0 (Current Pred: width)
     Match Type: Exact Object Match | Reason: Train Obj: '8.0'
-  Candidate: Norrtelje -> 8.0 (Current Pred: length)
+  Candidate: Norrtelje -> 8.0 (Current Pred: beam)
     Match Type: Exact Object Match | Reason: Train Obj: '8.0'
   Candidate: Appliqué inv. 733 -> 8.0 (Current Pred: height)
     Match Type: Exact Object Match | Reason: Train Obj: '8.0'
-  Candidate: Gladiator with sword -> 14.0 (Current Pred: length)
+  Candidate: Gladiator with sword -> 14.0 (Current Pred: width)
     Match Type: Exact Object Match | Reason: Train Obj: '14.0'
   Candidate: Drážní buk -> 22.0 (Current Pred: height)
     Match Type: Exact Object Match | Reason: Train Obj: '22.0'
-
-=== Label: 'urban population' (Train samples: 12) ===
-  Candidate: Kunduakori -> 0 (Current Pred: literate population)
-    Match Type: Exact Object Match | Reason: Train Obj: '0'
-  Candidate: ethyl acrylate -> 0 (Current Pred: ceiling exposure limit)
-    Match Type: Exact Object Match | Reason: Train Obj: '0'
-  Candidate: Bandagal -> 0 (Current Pred: number of households)
-    Match Type: Exact Object Match | Reason: Train Obj: '0'
-  Candidate: Faridpur -> 0 (Current Pred: number of households)
-    Match Type: Exact Object Match | Reason: Train Obj: '0'
-  Candidate: Mautara -> 0 (Current Pred: number of households)
-    Match Type: Exact Object Match | Reason: Train Obj: '0'
-  Candidate: Tangutur mandal -> 16290 (Current Pred: number of households)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Tangutur mandal'
-  Candidate: Santhamaguluru mandal -> Santhamaguluru (Current Pred: capital)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Santhamaguluru mandal'
-  Candidate: Arazi Brahmandihi -> 0 (Current Pred: literate population)
-    Match Type: Exact Object Match | Reason: Train Obj: '0'
-  Candidate: Racherla mandal -> 19855.0 (Current Pred: area)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Racherla mandal'
-  Candidate: Chak Modpur -> 0 (Current Pred: literate population)
-    Match Type: Exact Object Match | Reason: Train Obj: '0'
-
-=== Label: 'uses' (Train samples: 19) ===
-  Candidate: Popůvky -> Moravia (Current Pred: historical region)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Popůvky'
-  Candidate: Skrbeň -> Moravia (Current Pred: historical region)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Skrbeň'
-  Candidate: Přísnotice -> Moravia (Current Pred: historical region)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Přísnotice'
-  Candidate: Mošnov -> Moravia (Current Pred: historical region)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Mošnov'
-
-=== Label: 'victory' (Train samples: 13) ===
-  Candidate: Inter Milan -> black (Current Pred: official color)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Inter Milan'
-  Candidate: Associazione Calcio Milan -> black (Current Pred: official color)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Associazione Calcio Milan'
-  Candidate: Lotto NL-Jumbo 2017 -> Juan José Lobato (Current Pred: points classification)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Lotto NL-Jumbo 2017'
-  Candidate: Lotto NL-Jumbo 2017 -> Robert Wagner (Current Pred: general classification of race participants)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'Lotto NL-Jumbo 2017'
-
-=== Label: 'wavelength' (Train samples: 2) ===
-  Candidate: Zambia -> 3.0 (Current Pred: real gross domestic product growth rate)
-    Match Type: Exact Object Match | Reason: Train Obj: '3.0'
-  Candidate: AMiBA -> radio interferometer (Current Pred: guidance system)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'AMiBA'
-  Candidate: AMiBA -> cosmic microwave background experiment (Current Pred: start point)
-    Match Type: Exact Subject Match | Reason: Train Subj: 'AMiBA'
 
 === Label: 'young rider classification' (Train samples: 22) ===
   Candidate: 2016 Volta a Portugal -> José Gonçalves (Current Pred: mountains classification)

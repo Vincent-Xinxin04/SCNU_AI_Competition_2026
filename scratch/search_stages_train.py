@@ -7,17 +7,21 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 train_dir = r'f:\github\SCNU_AI_Competition_2026\dataset\Train_Set'
 
-results = []
+print("Searching train set for 'Stage' in Subject:")
+found = 0
 for filename in os.listdir(train_dir):
     if filename.endswith('.csv'):
+        label = filename[:-4]
         filepath = os.path.join(train_dir, filename)
         with open(filepath, 'r', encoding='utf-8-sig') as f:
             reader = csv.reader(f)
             next(reader, None)
             for row in reader:
-                if len(row) >= 2 and '41.37' in row[1]:
-                    results.append((filename[:-4], row))
+                if len(row) >= 2:
+                    sub = row[0].strip()
+                    obj = row[1].strip()
+                    if 'stage' in sub.lower():
+                        found += 1
+                        print(f"[{label}] {sub} -> {obj}")
 
-print(f"Found {len(results)} matches for '41.37' in train:")
-for r in results:
-    print(r)
+print(f"Total 'Stage' matches in Train: {found}")

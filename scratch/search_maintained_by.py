@@ -7,16 +7,13 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 train_dir = r'f:\github\SCNU_AI_Competition_2026\dataset\Train_Set'
 
-filepath = os.path.join(train_dir, 'contains settlement.csv')
+filepath = os.path.join(train_dir, 'maintained by.csv')
 if os.path.exists(filepath):
-    print("--- contains settlement.csv ---")
+    print("--- maintained by.csv ---")
     with open(filepath, 'r', encoding='utf-8-sig') as f:
         reader = csv.reader(f)
         next(reader, None)
         for i, row in enumerate(reader):
-            if 'albania' in row[1].lower() or 'albania' in row[0].lower():
-                print(row)
-            elif i < 10:
-                print(row)
+            print(row)
 else:
-    print("contains settlement.csv does not exist")
+    print("maintained by.csv does not exist")

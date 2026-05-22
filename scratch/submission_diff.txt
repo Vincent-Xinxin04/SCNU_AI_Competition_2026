@@ -1,0 +1,9 @@
+Total changes: 8
+357: Lake Bolsena,Italy,country => Lake Bolsena,Italy,basin country
+661: Nenque,Phoenix,constellation => Nenque,Phoenix,said to be the same as
+965: 2016 Volta a Portugal,José Gonçalves,general classification of race participants => 2016 Volta a Portugal,José Gonçalves,mountains classification
+1856: Draw the Line,Al Hirschfeld,cover art by => Draw the Line,Al Hirschfeld,performer
+2292: Appliqué inv. 848,appliqué,fabrication method => Appliqué inv. 848,appliqué,significant event
+3283: Alphonse Allard Fonds,fonds,level of description => Alphonse Allard Fonds,fonds,instance of
+3466: Milano Porta Garibaldi,1,fare zone => Milano Porta Garibaldi,1,publication interval
+3680: Lake Bracciano,Italy,country => Lake Bracciano,Italy,basin country

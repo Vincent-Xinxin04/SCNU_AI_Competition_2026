@@ -15,9 +15,9 @@ for filename in os.listdir(train_dir):
             reader = csv.reader(f)
             next(reader, None)
             for row in reader:
-                if len(row) >= 2 and '41.37' in row[1]:
+                if 'cdkn2a' in row[0].lower() or 'p16' in row[0].lower():
                     results.append((filename[:-4], row))
 
-print(f"Found {len(results)} matches for '41.37' in train:")
+print(f"Found {len(results)} matches in train:")
 for r in results:
     print(r)

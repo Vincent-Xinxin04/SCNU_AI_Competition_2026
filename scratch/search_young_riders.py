@@ -7,7 +7,6 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 train_dir = r'f:\github\SCNU_AI_Competition_2026\dataset\Train_Set'
 
-results = []
 for filename in os.listdir(train_dir):
     if filename.endswith('.csv'):
         filepath = os.path.join(train_dir, filename)
@@ -15,9 +14,5 @@ for filename in os.listdir(train_dir):
             reader = csv.reader(f)
             next(reader, None)
             for row in reader:
-                if len(row) >= 2 and '41.37' in row[1]:
-                    results.append((filename[:-4], row))
-
-print(f"Found {len(results)} matches for '41.37' in train:")
-for r in results:
-    print(r)
+                if 'valverde' in row[1].lower() or 'boonen' in row[1].lower():
+                    print(f"{filename[:-4]}: {row}")

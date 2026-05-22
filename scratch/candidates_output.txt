@@ -1,0 +1,340 @@
+Checking for candidate matches for unpredicted labels:
+
+
+--- Label: CJKV variant character ---
+  Subject-only matches in Test (different objects):
+    Row 3136: 海 -> Big5 character | Current Pred: subclass of
+
+--- Label: VAT-rate ---
+  Subject-only matches in Test (different objects):
+    Row 351: Italy -> 16 | Current Pred: compulsory education (maximum age)
+    Row 383: Zambia -> Edgar Lungu | Current Pred: head of government
+    Row 508: Czech Republic -> Eastern Europe | Current Pred: part of
+    Row 529: Japan -> Albania | Current Pred: diplomatic relation
+    Row 571: Paraguay -> Mario Abdo Benítez | Current Pred: head of state
+    Row 678: Austria -> Wikipedia:Vital articles | Current Pred: on focus list of Wikimedia project
+    Row 978: Zambia -> 3.0 | Current Pred: real gross domestic product growth rate
+    Row 1082: Japan -> 1264140980383 | Current Pred: GDP (PPP)
+    Row 1156: Austria -> Palais Erzherzog Albrecht | Current Pred: owner of
+    Row 1243: Japan -> 20 | Current Pred: age of majority
+    Row 1600: Chad -> geography of Chad | Current Pred: geography of topic
+    Row 1988: Austria -> euro | Current Pred: currency
+    Row 2247: Argentina -> Argentine National Congress | Current Pred: legislative body
+    Row 2254: Austria -> Österreichische Bundesforste | Current Pred: legislative body
+    Row 2333: Japan -> history of Japan | Current Pred: history of topic
+    Row 3036: Italy -> Italian Parliament | Current Pred: legislative body
+    Row 3179: Kazakhstan -> Kazakhstan Temir Zholy | Current Pred: owner of
+    Row 3487: Slovakia -> Eastern Europe | Current Pred: part of
+    Row 3571: Central African Republic -> 52.171 | Current Pred: life expectancy
+    Row 3618: Japan -> 4.0 | Current Pred: inflation rate
+    Row 3717: Morocco -> -23.9 | Current Pred: minimum temperature record
+  Object-only matches in Test (different subjects):
+    Row 664: Schwaz -> 20.0 | Current Pred: elevation above sea level
+    Row 1117: lanthanum-128 -> 5.0 | Current Pred: spin quantum number
+    Row 1442: Holon -> 20.0 | Current Pred: elevation above sea level
+    Row 1477: Neminatha -> 10.0 | Current Pred: height
+    Row 1891: Lake Bolsena -> 13.0 | Current Pred: length
+    Row 1936: Buk lesní v Třebovicích -> 22.0 | Current Pred: height
+    Row 3663: Beltrami County -> 18.0 | Current Pred: water as percent of area
+    Row 3684: Drážní buk -> 22.0 | Current Pred: height
+
+--- Label: absolute magnitude ---
+  Subject-only matches in Test (different objects):
+    Row 189: 2001 QX297 -> 309.4 | Current Pred: orbital period
+    Row 3359: Gliese 777 -> -45.14 | Current Pred: radial velocity
+    Row 3363: HD 27894 -> -59.410839750485 | Current Pred: declination
+    Row 3555: Gliese 777 -> 1560000.0 | Current Pred: diameter
+    Row 4030: 2001 QX297 -> Palomar Observatory | Current Pred: site of astronomical discovery
+
+--- Label: after a work by ---
+  Subject-only matches in Test (different objects):
+    Row 175: Beauty and the Beast -> Suitable for all audiences | Current Pred: ICAA rating
+    Row 809: Beauty and the Beast -> Category I | Current Pred: Filmiroda rating
+    Row 1181: Kilgarren castle, Cardiganshire -> 158.0 | Current Pred: height
+    Row 1511: Beauty and the Beast -> John Carnochan | Current Pred: film editor
+    Row 2189: Gateway Of Carnarvon Castle -> t1154233968 | Current Pred: inception
+    Row 2478: Beauty and the Beast -> David Ogden Stiers | Current Pred: voice actor
+    Row 3084: Crickhowel Castle -> 1800-01-01 | Current Pred: inception
+    Row 3129: Beauty and the Beast -> Particularly suitable for kids | Current Pred: ICAA rating
+    Row 3959: View near the Usk at Crickhowell -> 1800-01-01 | Current Pred: inception
+
+--- Label: art director ---
+
+--- Label: commissioned by ---
+  Subject-only matches in Test (different objects):
+    Row 468: RB 113 -> Leipzig Hauptbahnhof | Current Pred: terminus
+    Row 785: RB 56 -> Baden-Württemberg | Current Pred: operating area
+    Row 2098: RB 13 -> Baden-Württemberg | Current Pred: operating area
+    Row 2441: RB 6 -> 1435 mm track gauge | Current Pred: track gauge
+    Row 3012: RB 7 -> Lower Saxony | Current Pred: operating area
+    Row 3237: RB 56 -> Lower Saxony | Current Pred: operating area
+    Row 3507: RB 11 -> Baden-Württemberg | Current Pred: operating area
+    Row 3896: RB 11 -> Brandenburg | Current Pred: operating area
+
+--- Label: connecting service ---
+  Subject-only matches in Test (different objects):
+    Row 1009: Forest Glen station -> gratis | Current Pred: Wi-Fi access
+    Row 1783: Méndez Álvaro -> Madrid | Current Pred: place of publication
+    Row 3798: 30th Street Station -> tower station | Current Pred: adjacent station
+
+--- Label: contains settlement ---
+  Subject-only matches in Test (different objects):
+    Row 51: Sukth -> Municipal unit of Albania | Current Pred: located in the administrative territorial entity
+    Row 132: Trutnov -> Ivan Adamec | Current Pred: head of government
+    Row 228: Xibër -> municipality of Albania | Current Pred: located in the administrative territorial entity
+    Row 389: Levan, Fier -> Fier District | Current Pred: located in the administrative territorial entity
+    Row 811: Kolsh -> municipality of Albania | Current Pred: located in the administrative territorial entity
+    Row 997: Shtiqën -> municipality of Albania | Current Pred: located in the administrative territorial entity
+    Row 1461: Nikël -> Municipal unit of Albania | Current Pred: located in the administrative territorial entity
+    Row 1970: Levan, Fier -> Municipal unit of Albania | Current Pred: located in the administrative territorial entity
+    Row 2289: Kolsh -> Municipal unit of Albania | Current Pred: located in the administrative territorial entity
+    Row 2343: Labinot-Fushë -> Municipal unit of Albania | Current Pred: located in the administrative territorial entity
+    Row 3388: Kolsh -> 4228.0 | Current Pred: population
+    Row 3521: Levan, Fier -> municipality of Albania | Current Pred: part of
+    Row 3679: Xibër -> Municipal unit of Albania | Current Pred: located in the administrative territorial entity
+    Row 3769: Trutnov -> Trutnov District | Current Pred: capital of
+    Row 3881: Sukth -> town | Current Pred: located in the administrative territorial entity
+    Row 3887: Sukth -> municipality of Albania | Current Pred: located in the administrative territorial entity
+    Row 3966: Selishtë -> municipality of Albania | Current Pred: part of
+
+--- Label: contributor to the creative work or subject ---
+
+--- Label: cover art by ---
+  Subject-only matches in Test (different objects):
+    Row 1348: Self Portrait -> Self-portrait | Current Pred: title
+    Row 2915: Damned Damned Damned -> Damned | Current Pred: performer
+
+--- Label: distributor ---
+  Subject-only matches in Test (different objects):
+    Row 148: Wonder Woman 1984 -> color | Current Pred: color
+    Row 617: Night Court -> Jack Elliott | Current Pred: composer
+    Row 1686: Miracle of the White Stallions -> Isabella Schlichting | Current Pred: costume designer
+    Row 2204: Morbius -> Matt Sazama | Current Pred: screenwriter
+    Row 3757: Miracle of the White Stallions -> Miracle of the White Stallions | Current Pred: title
+
+--- Label: edition or translation of ---
+  Subject-only matches in Test (different objects):
+    Row 1211: Too Much Love Will Kill You -> United States of America | Current Pred: country of origin
+    Row 1410: Dead Horse -> United States of America | Current Pred: country of origin
+    Row 3340: The Boys of Fall -> United States of America | Current Pred: country of origin
+
+--- Label: editor-in-chief ---
+
+--- Label: facet of ---
+  Subject-only matches in Test (different objects):
+    Row 164: France at the 2018 FIFA World Cup -> 3 | Current Pred: ranking
+    Row 564: Belgium at the 2018 FIFA World Cup -> 3 | Current Pred: ranking
+    Row 1429: kindness -> virtue | Current Pred: subclass of
+    Row 3102: kindness -> emotion | Current Pred: subclass of
+
+--- Label: gross tonnage ---
+  Subject-only matches in Test (different objects):
+    Row 357: Cosco Africa -> 14.5 | Current Pred: draft
+    Row 711: RV Derinsu -> survey vessel | Current Pred: use
+    Row 719: Cruise Olympia -> 2010-01-01 | Current Pred: service entry
+    Row 1029: Stickers Gat -> survey vessel | Current Pred: subclass of
+    Row 1332: RV MTA Turkuaz -> Turkey | Current Pred: country
+    Row 1452: SAS Protea -> 79.0 | Current Pred: length
+    Row 2266: Cap Harvey -> Cap Harvey | Current Pred: named after
+    Row 2376: RV MTA Turkuaz -> survey vessel | Current Pred: use
+    Row 3006: RV Derinsu -> Turkey | Current Pred: country
+    Row 3107: USNS Kane -> survey vessel | Current Pred: use
+
+--- Label: has decorative pattern ---
+  Subject-only matches in Test (different objects):
+    Row 2290: Appliqué inv. 848 -> appliqué | Current Pred: significant event
+    Row 2433: Appliqué inv. 734 -> appliqué | Current Pred: fabrication method
+    Row 2509: Appliqué inv. 733 -> appliqué | Current Pred: fabrication method
+    Row 2966: Appliqué inv. 733 -> 8.0 | Current Pred: height
+    Row 3494: Appliqué inv. 739 -> appliqué | Current Pred: fabrication method
+
+--- Label: home world ---
+
+--- Label: inflows ---
+  Subject-only matches in Test (different objects):
+    Row 2668: Lake Maggiore -> 41.37 | Current Pred: area
+
+--- Label: interested in ---
+  Subject-only matches in Test (different objects):
+    Row 2194: Blue Hill Historical Society, Maine -> Blue Hill Historical Society | Current Pred: official name
+
+--- Label: languages spoken ---
+  Subject-only matches in Test (different objects):
+    Row 2951: Luke Skywalker -> Yoda | Current Pred: student of
+
+--- Label: level of description ---
+  Exact triplet matches in Test:
+    Row 3281: Alphonse Allard Fonds -> fonds | Current Pred: instance of
+
+--- Label: located in the ecclesiastical territorial entity ---
+  Subject-only matches in Test (different objects):
+    Row 1186: Skivholme parish -> Skanderborg Municipality | Current Pred: located in the administrative territorial entity
+
+--- Label: longitude of ascending node ---
+
+--- Label: lower flammable limit ---
+  Object-only matches in Test (different subjects):
+    Row 996: Boulder, Mahlewagwald I -> 2.0 | Current Pred: width
+    Row 2218: droperidol -> 2.5 | Current Pred: defined daily dose
+    Row 2219: Boulder, Büttenberg, Crossing Bartolomäusweg/ Jungholzweg -> 2.0 | Current Pred: width
+
+--- Label: lyrics by ---
+  Subject-only matches in Test (different objects):
+    Row 3711: My Way -> SUISA Works database | Current Pred: catalog
+
+--- Label: maintained by ---
+  Subject-only matches in Test (different objects):
+    Row 176: Japan National Route 436 -> maritime transport | Current Pred: uses
+    Row 665: Golden Gate Bridge -> Joseph Strauss | Current Pred: structural engineer
+    Row 1113: Japan National Route 57 -> Uki | Current Pred: terminus location
+    Row 1478: Japan National Route 57 -> Kumamoto | Current Pred: terminus location
+    Row 1606: Japan National Route 197 -> maritime transport | Current Pred: uses
+    Row 1975: Throgs Neck Bridge -> Interstate 295 | Current Pred: carries
+    Row 2495: Japan National Route 436 -> road | Current Pred: terminus location
+    Row 2924: Japan National Route 57 -> road | Current Pred: terminus location
+    Row 3501: Japan National Route 499 -> Nagasaki Prefectural Road Route 34 | Current Pred: partially coincident with
+    Row 3907: Japan National Route 350 -> maritime transport | Current Pred: uses
+    Row 4035: Japan National Route 350 -> road | Current Pred: terminus location
+  Object-only matches in Test (different subjects):
+    Row 1593: Ōsumi Province -> Kagoshima Prefecture | Current Pred: located in present-day administrative territorial entity
+
+--- Label: male population ---
+
+--- Label: mean anomaly ---
+
+--- Label: name ---
+  Subject-only matches in Test (different objects):
+    Row 659: Nenque -> Phoenix | Current Pred: said to be the same as
+    Row 875: Nushagak -> 14790 | Current Pred: surface gravity
+    Row 3073: Epsilon Eridani b -> 53.232687333 | Current Pred: right ascension
+
+--- Label: narrator ---
+
+--- Label: negative prognostic predictor ---
+  Subject-only matches in Test (different objects):
+    Row 1024: CDKN2A p16 EXPRESSION -> oropharynx cancer | Current Pred: positive prognostic predictor
+    Row 2291: CDKN2A p16 EXPRESSION -> CDKN2A | Current Pred: biological variant of
+
+--- Label: nominal GDP per capita ---
+  Subject-only matches in Test (different objects):
+    Row 351: Italy -> 16 | Current Pred: compulsory education (maximum age)
+    Row 529: Japan -> Albania | Current Pred: diplomatic relation
+    Row 1082: Japan -> 1264140980383 | Current Pred: GDP (PPP)
+    Row 1243: Japan -> 20 | Current Pred: age of majority
+    Row 1764: Thailand -> Japan | Current Pred: diplomatic relation
+    Row 2333: Japan -> history of Japan | Current Pred: history of topic
+    Row 3036: Italy -> Italian Parliament | Current Pred: legislative body
+    Row 3618: Japan -> 4.0 | Current Pred: inflation rate
+
+--- Label: notable work ---
+  Subject-only matches in Test (different objects):
+    Row 547: EnjoyUp Games -> Spain | Current Pred: country
+    Row 2297: Cosmonaut Games -> Spain | Current Pred: country
+    Row 3273: BadLand Games -> Spain | Current Pred: headquarters location
+
+--- Label: number of decimal digits ---
+  Subject-only matches in Test (different objects):
+    Row 405: 1201 -> 1201 | Current Pred: prime factor
+    Row 1256: 148 -> 148 | Current Pred: numeric value
+    Row 1302: 781 -> 11 | Current Pred: prime factor
+    Row 1794: 1159 -> 19 | Current Pred: prime factor
+    Row 1912: 253 -> 11 | Current Pred: prime factor
+    Row 3336: 9025 -> 9025 | Current Pred: numeric value
+
+--- Label: number of platform faces ---
+  Subject-only matches in Test (different objects):
+    Row 1562: Changying station -> China Standard Time | Current Pred: located in time zone
+    Row 2244: Changying station -> Caofang station | Current Pred: adjacent station
+    Row 4026: Bibliothèque François Mitterrand Station -> 2000-01-01 | Current Pred: inception
+
+--- Label: official symbol ---
+  Subject-only matches in Test (different objects):
+    Row 873: Alberta -> Remembrance Day | Current Pred: public holiday
+    Row 2263: Alberta -> Good Friday | Current Pred: public holiday
+
+--- Label: opposite of ---
+
+--- Label: organization directed from the office or person ---
+  Subject-only matches in Test (different objects):
+    Row 581: mayor of Bilbao -> 1836-01-01 | Current Pred: inception
+
+--- Label: patron saint ---
+
+--- Label: payload mass ---
+
+--- Label: place of death ---
+
+--- Label: powered by ---
+  Subject-only matches in Test (different objects):
+    Row 2938: Norrtelje -> 8.0 | Current Pred: beam
+    Row 3207: Ferrari GTC4Lusso -> 1980.0 | Current Pred: width
+    Row 3531: Bodangora Wind Farm -> 2019-02-27 | Current Pred: service entry
+
+--- Label: presenter ---
+  Subject-only matches in Test (different objects):
+    Row 173: Miss USA 2013 -> Miss USA 2012 | Current Pred: follows
+    Row 1421: Miss USA 2015 -> Miss USA 2014 | Current Pred: follows
+    Row 1449: 2025 -> Yoram Zack | Current Pred: creator
+    Row 1631: Miss USA 2014 -> Miss USA 2013 | Current Pred: follows
+    Row 2018: Saturday Night Live -> Beth McCarthy-Miller | Current Pred: director
+
+--- Label: recording or performance of ---
+
+--- Label: service retirement ---
+  Subject-only matches in Test (different objects):
+    Row 3046: LSWR 177-class no. 188 -> 2-4-0WT | Current Pred: wheel arrangement
+
+--- Label: short name ---
+  Subject-only matches in Test (different objects):
+    Row 437: Maine -> Mainer | Current Pred: demonym
+    Row 2836: Federated States of Micronesia -> 120 | Current Pred: emergency phone number
+    Row 3557: Maine -> extinct | Current Pred: has quality
+    Row 3868: Palau -> 120 | Current Pred: mains voltage
+
+--- Label: stage classification ---
+  Subject-only matches in Test (different objects):
+    Row 158: 2018 Volta a la Comunitat Valenciana, Stage 3 -> Calp | Current Pred: destination point
+    Row 552: 2017 Setmana Ciclista Valenciana, Stage 1 -> Vila-real | Current Pred: destination point
+    Row 2115: 2018 Vuelta del Uruguay stage 2a -> 2018 Vuelta del Uruguay stage 2b | Current Pred: followed by
+    Row 2365: 2013 Tour des Fjords, Stage 3 -> 2013 Tour des Fjords, Stage 4 | Current Pred: followed by
+
+--- Label: statistical leader ---
+  Subject-only matches in Test (different objects):
+    Row 3819: 1982 Lliga Catalana de Bàsquet -> Spain | Current Pred: country
+
+--- Label: target ---
+
+--- Label: territory overlaps ---
+  Subject-only matches in Test (different objects):
+    Row 1246: Bergwiesen Lippe mit Buchheller- und Mischebachtal -> 2003-01-01 | Current Pred: inception
+    Row 1723: Sieg -> European bitterling | Current Pred: taxa especially protected in area
+    Row 2872: Wummsee und Twernsee -> European bitterling | Current Pred: taxa especially protected in area
+
+--- Label: time of spacecraft orbit decay ---
+  Object-only matches in Test (different subjects):
+    Row 160: 2012 Toray Pan Pacific Open -> 2012-01-01 | Current Pred: point in time
+    Row 1387: 2012 Copa Sony Ericsson Colsanitas -> 2012-01-01 | Current Pred: point in time
+    Row 1890: 2012 New Haven Open at Yale -> 2012-01-01 | Current Pred: point in time
+    Row 2854: 2012 US Open Badminton Championships -> 2012-01-01 | Current Pred: point in time
+    Row 3195: 2012 Irish Badminton Championships -> 2012-01-01 | Current Pred: point in time
+
+--- Label: unemployment rate ---
+  Subject-only matches in Test (different objects):
+    Row 508: Czech Republic -> Eastern Europe | Current Pred: part of
+    Row 643: France -> 16 | Current Pred: compulsory education (maximum age)
+  Object-only matches in Test (different subjects):
+    Row 978: Zambia -> 3.0 | Current Pred: real gross domestic product growth rate
+    Row 1200: Svängen lighthouse -> 14.0 | Current Pred: focal height
+    Row 1477: Neminatha -> 10.0 | Current Pred: height
+    Row 1936: Buk lesní v Třebovicích -> 22.0 | Current Pred: height
+    Row 2167: Mount Carmel -> 8.0 | Current Pred: width
+    Row 2782: Caló de S'Estaca -> 8.0 | Current Pred: width
+    Row 2938: Norrtelje -> 8.0 | Current Pred: beam
+    Row 2966: Appliqué inv. 733 -> 8.0 | Current Pred: height
+    Row 3681: Gladiator with sword -> 14.0 | Current Pred: width
+    Row 3684: Drážní buk -> 22.0 | Current Pred: height
+
+--- Label: young rider classification ---
+  Subject-only matches in Test (different objects):
+    Row 963: 2016 Volta a Portugal -> José Gonçalves | Current Pred: mountains classification
+    Row 1235: 2013 Danmark Rundt -> 2013-08-04 | Current Pred: end time

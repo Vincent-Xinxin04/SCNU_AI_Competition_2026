@@ -2,7 +2,11 @@ import csv
 
 test_file = r'f:\github\SCNU_AI_Competition_2026\dataset\test.csv'
 
-subjects = {'Luke Skywalker', 'Palpatine', 'Anakin Skywalker'}
+subjects = {
+    'Raspenava', 'Heerhugowaard', 'Răcari', 'Přibyslav', 'Xibër', 'Nikël', 'Selishtë', 
+    'Levan, Fier', 'Trutnov', 'Haarlemmermeer', 'Labinot-Fushë', 'Potcoava', 'Sukth', 
+    'Murgeni', 'Shtiqën', 'Kolsh', 'Roznov'
+}
 
 with open(test_file, 'r', encoding='utf-8-sig') as f:
     reader = csv.DictReader(f)

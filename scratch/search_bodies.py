@@ -1,7 +1,23 @@
+import os
 import csv
-bodies = ['Eris', 'Makemake', 'Haumea', 'Quaoar']
-with open(r'f:\github\SCNU_AI_Competition_2026\result\submission_0.747.csv', 'r', encoding='utf-8-sig') as f:
-    for row in csv.DictReader(f):
-        for b in bodies:
-            if b in row['Subject'] or b in row['Object']:
-                print(f"{row['Subject']} -> {row['Object']} ({row['Label']})")
+import sys
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
+train_dir = r'f:\github\SCNU_AI_Competition_2026\dataset\Train_Set'
+
+results = []
+for filename in os.listdir(train_dir):
+    if filename.endswith('.csv'):
+        filepath = os.path.join(train_dir, filename)
+        with open(filepath, 'r', encoding='utf-8-sig') as f:
+            reader = csv.reader(f)
+            next(reader, None)
+            for row in reader:
+                if 'maggiore' in row[0].lower():
+                    results.append((filename[:-4], row))
+
+print(f"Found {len(results)} matches for Lake Maggiore in train:")
+for r in results:
+    print(r)

@@ -7,19 +7,18 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 train_dir = r'f:\github\SCNU_AI_Competition_2026\dataset\Train_Set'
 labels = [
-    'general classification of race participants', 
-    'mountains classification', 
-    'young rider classification', 
-    'points classification', 
-    'winner'
+    'winner', 'general classification of race participants', 
+    'mountains classification', 'young rider classification', 'points classification'
 ]
 
 for label in labels:
     filepath = os.path.join(train_dir, f"{label}.csv")
     if os.path.exists(filepath):
+        print(f"\n--- {label}.csv (first 10 rows) ---")
         with open(filepath, 'r', encoding='utf-8-sig') as f:
             reader = csv.reader(f)
             next(reader, None)
-            for row in reader:
-                if 'volta a portugal' in row[0].lower():
-                    print(f"{label}: {row}")
+            for i, row in enumerate(reader):
+                if i >= 10:
+                    break
+                print(row)
