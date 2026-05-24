@@ -2,6 +2,7 @@ import os
 import glob
 import pandas as pd
 import sys
+import re
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -16,9 +17,10 @@ for f in train_files:
         for idx, row in df.iterrows():
             s = str(row['Subject']).strip()
             o = str(row['Object']).strip()
-            if s == o:
+            # If subject looks like "Month Year" and object is "Year"
+            if re.match(r'^[A-Za-z]+\s+\d{4}$', s) and re.match(r'^\d{4}$', o):
                 train_records.append({'Subject': s, 'Object': o, 'Label': lbl})
 
-print(f"Total identical matches in train: {len(train_records)}")
+print(f"Total matches in train: {len(train_records)}")
 for r in train_records[:30]:
     print(f"Sub: {r['Subject']} -> Obj: {r['Object']} | Label: {r['Label']}")

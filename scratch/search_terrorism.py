@@ -16,9 +16,9 @@ for f in train_files:
         for idx, row in df.iterrows():
             s = str(row['Subject']).strip()
             o = str(row['Object']).strip()
-            if s == o:
+            if 'terrorism' in s or 'terrorism' in o:
                 train_records.append({'Subject': s, 'Object': o, 'Label': lbl})
 
-print(f"Total identical matches in train: {len(train_records)}")
+print(f"Total matches in train: {len(train_records)}")
 for r in train_records[:30]:
     print(f"Sub: {r['Subject']} -> Obj: {r['Object']} | Label: {r['Label']}")

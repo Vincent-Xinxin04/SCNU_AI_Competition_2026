@@ -1,6 +1,7 @@
 import os
 import glob
 import pandas as pd
+import re
 import sys
 
 sys.stdout.reconfigure(encoding='utf-8')
@@ -16,9 +17,9 @@ for f in train_files:
         for idx, row in df.iterrows():
             s = str(row['Subject']).strip()
             o = str(row['Object']).strip()
-            if s == o:
+            if re.match(r'^t\d+$', o):
                 train_records.append({'Subject': s, 'Object': o, 'Label': lbl})
 
-print(f"Total identical matches in train: {len(train_records)}")
-for r in train_records[:30]:
+print(f"Total objects matching t\\d+ in train: {len(train_records)}")
+for r in train_records[:20]:
     print(f"Sub: {r['Subject']} -> Obj: {r['Object']} | Label: {r['Label']}")

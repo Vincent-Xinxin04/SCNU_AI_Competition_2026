@@ -6,8 +6,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 test_df = pd.read_csv("dataset/test.csv")
 sub_df = pd.read_csv("result/submission_0.7791.csv")
 
-works = ['Peter Pan', 'Beauty and the Beast', 'The Hunchback of Notre Dame', 'Treasure Planet', "The Emperor's New Groove", 'Gateway Of Carnarvon Castle']
-authors = ['Barrie', 'Beaumont', 'Hugo', 'Stevenson', 'Allers', 'Chapman', 'Victor Hugo', 'J. M. Barrie', 'Robert Louis Stevenson', 'Jeanne-Marie Leprince de Beaumont']
+characters = ['Amelia', 'Hawkins', 'Scroop', 'Treasure Planet', 'Ranieri', 'Pablos', 'Hofstedt', 'Husband', 'Keane', 'Duncan', 'Ripa']
 
 for idx, row in test_df.iterrows():
     s = str(row['Subject']).strip()
@@ -15,12 +14,8 @@ for idx, row in test_df.iterrows():
     pred = sub_df.loc[idx, 'Label']
     
     match = False
-    for w in works:
-        if w in s:
-            match = True
-            break
-    for a in authors:
-        if a in o:
+    for c in characters:
+        if c in s or c in o:
             match = True
             break
             

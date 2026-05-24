@@ -1,30 +1,17 @@
-import csv
+import pandas as pd
 import sys
 
-if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8')
+sys.stdout.reconfigure(encoding='utf-8')
 
-labels_file = r'f:\github\SCNU_AI_Competition_2026\dataset\labels.txt'
-sub_file = r'f:\github\SCNU_AI_Competition_2026\result\submission_final.csv'
+# Load labels
+with open("dataset/labels.txt", "r", encoding="utf-8") as f:
+    labels = [line.strip() for line in f if line.strip()]
 
-# Load all labels
-all_labels = set()
-with open(labels_file, 'r', encoding='utf-8') as f:
-    for line in f:
-        line = line.strip()
-        if line:
-            all_labels.add(line)
+# Load submission
+sub = pd.read_csv("result/submission_0.7791.csv")
+pred_labels = set(sub['Label'].unique())
 
-# Load submission labels
-pred_labels = set()
-with open(sub_file, 'r', encoding='utf-8-sig') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        pred_labels.add(row['Label'].strip())
-
-unpredicted = all_labels - pred_labels
-print(f"Total labels: {len(all_labels)}")
-print(f"Predicted labels: {len(pred_labels)}")
-print(f"Unpredicted labels ({len(unpredicted)}):")
-for label in sorted(unpredicted):
-    print(f"  - {label}")
+missing = [l for l in labels if l not in pred_labels]
+print(f"Total missing: {len(missing)}")
+for idx, m in enumerate(sorted(missing)):
+    print(f"{idx+1}: {m}")

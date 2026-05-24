@@ -1,4 +1,4 @@
-﻿Subject,Object,Label
+Subject,Object,Label
 The Convent,official residence,has facility
 Thé Rajah,625.0,height
 Marjaniemi lighthouse,Hampus Dalström,architect
@@ -53,7 +53,7 @@ TPC of Louisiana,golf,sport
 Sukth,Municipal unit of Albania,located in the administrative territorial entity
 Uherské Hradiště,Priverno,shares border with
 Miss Texas' Outstanding Teen,Richardson,located in the administrative territorial entity
-Židák u Rožďalovic,solitary,has parts of the class
+Židák u Rožďalovic,solitary,instance of
 Berkshire,1261.9606,area
 The Sims Wiki,MediaWiki website,instance of
 Bella Paulista,São Paulo,depicts
@@ -222,7 +222,7 @@ Sedlo pod Svišťovkou,High Tatras,mountain range
 Naviduct Krabbersgat,Lelystad,located in the administrative territorial entity
 Fion,Ségou Region,located in the administrative territorial entity
 Oxford,UTC±00:00,located in time zone
-September 11 attacks,suicide attack,armament
+September 11 attacks,suicide attack,instance of
 Chidley Point,Western Australia,located in the administrative territorial entity
 Kinpurney Hill,scheduled monument,heritage designation
 iron-51,-1,parity quantum number
@@ -299,7 +299,7 @@ Galovački buk,Plitvice Lakes National Park,located in protected area
 Plauerhagen wind farm,wind farm,has parts of the class
 Gliese 436 b,0.0291,semi-major axis of an orbit
 DeWalt DW308M,520,power consumed
-Chodovský buk,solitary,perimeter
+Chodovský buk,solitary,instance of
 chaperone protein DnaJ    Rv2373c,response to heat,biological process
 Citigroup,Public Eye Tax Award,award received
 Building 18010-18,Israel,country
@@ -358,22 +358,22 @@ Lake Bolsena,Italy,country
 Borås Ishall,Borås HC,occupant
 Cosco Africa,14.5,draft
 Concerto No. 1 in D Minor for Oboe and Orchestra: III. Allegro,concerto,genre
-Boston Marathon bombings,terrorism,armament
+Boston Marathon bombings,terrorism,instance of
 2005 Boston Open Badminton Championships,2005 Boston Open Badminton Championships – Men's doubles,has part
 UGC 8053,2.888,proper motion
 Atlanta,Fukuoka,twinned administrative body
 K2 Telephone Kiosk At Junction With Whitechapel Road,Whitechapel,located in the administrative territorial entity
 S1,S-Bahn Berlin GmbH,operator
 cerium-137,79,atomic number
-Doctor Doppler,Nik Ranieri,performer
+Doctor Doppler,Nik Ranieri,contributor to the creative work or subject
 2017 Har Adar shooting,1,number of perpetrators
 The Royal Oak Inn,inn,located in or next to body of water
 2017 Canadian Grand Prix,Lewis Hamilton,fastest lap
 African Meeting House,National Historic Landmark,heritage designation
 cerium-124,6.0,spin quantum number
 Les Chenaux Regional County Municipality,Saint-Luc-de-Vincennes,capital
-Tomeškův dub,solitary,FAO risk status
-Munich massacre,terrorism,armament
+Tomeškův dub,solitary,instance of
+Munich massacre,terrorism,instance of
 Gömör és Kis-Hont County,Rimavská Sobota,capital
 Maumee Bay State Park,Ohio state park,shares border with
 "Somos tú y yo, un nuevo día",various artists,record label
@@ -525,7 +525,7 @@ Faculdade Cásper Líbero,São Paulo,located in the administrative territorial e
 Cooma-Monaro Shire,845.0,elevation above sea level
 pessimism,attitude,subclass of
 "2018 Sibiu Cycling Tour, stage 3A",Cisnădie,destination point
-Kunduakori,0,literate population
+Kunduakori,0,number of households
 Forn de pa artesà,Spain,country
 Tintern Abbey,Cistercians,religious order
 Japan,Albania,diplomatic relation
@@ -783,7 +783,7 @@ Uherské Hradiště,Cultural monuments in Uherské Hradiště,list of monuments
 Real Club de la Puerta de Hierro,Madrid,headquarters location
 Peruvian women's football championship,Peruvian Football Federation,organizer
 Westby,1896-01-01,inception
-漢,汉,has part
+漢,汉,CJKV variant character
 RB 56,Baden-Württemberg,operating area
 Church of Santa Giulia,Italian national heritage,heritage designation
 The Touchstone,public domain,copyright status
@@ -986,7 +986,7 @@ Victor Emmanuel II,Italian national heritage,heritage designation
 2010 African Badminton Championships,2011 African Badminton Championships,followed by
 Brickipedia,MediaWiki website,part of
 2MASS J05353270-0630181,Orion,constellation
-Kaasův buk,solitary,has parts of the class
+Kaasův buk,solitary,instance of
 "2018 Tour de France, stage 20",individual time trial,sport
 old stable in Myllymäki torp,Myllymäki torp,located in the administrative territorial entity
 2017 Vuelta a la Comunidad de Madrid,Spanish men's national road cycling team 2017,participating team
@@ -1044,7 +1044,7 @@ Thirty-seventh Amendment of the Constitution Bill 2018,2018-10-26,point in time
 GNU Emacs,OpenBSD,based on
 Berlin Südkreuz station,station located on surface,heritage designation
 Kosmos 1001,unmanned spaceflight,significant event
-Dub u Větrova,solitary,sex or gender
+Dub u Větrova,solitary,instance of
 Ivvavik National Park,1984-01-01,inception
 Carafe Sirènes et Grenouilles,Carafe Sirènes et Grenouilles (stopper),has part
 1991 Thai Badminton Championships,1991-01-01,point in time
@@ -1053,7 +1053,7 @@ Canterbury Post Office,Canterbury,location
 Associazione Calcio Milan,black,official color
 Photo Booth,Wikipedia article covering multiple topics,part of
 Biblioteca Casanatense,State public library,use
-Rájovský javor,solitary,has parts of the class
+Rájovský javor,solitary,instance of
 Sangonera la Verde,Spain,country
 Victoria Barracks Squash Courts,listed on the Commonwealth Heritage List,heritage designation
 China Township,charter township of Michigan,located in the administrative territorial entity
@@ -1124,7 +1124,7 @@ Státní okresní archív Břeclav,state district archive,part of
 Bella Paulista,2002-08-06,service entry
 Diccionario biográfico y bibliográfico de escritores y artistas catalanes del siglo XIX,Barcelona,place of publication
 1120s,12th century,part of
-Oslí buk,solitary,FAO risk status
+Oslí buk,solitary,instance of
 Sandoval de la Reina,Spain,country
 Adobe AIR,Android,operating system
 2005 Danish general election,2005-02-08,point in time
@@ -1156,7 +1156,7 @@ Complejo educativo Virgen de la Peana,Spain,country
 Bourg-en-Bresse Cathedral,monument historique classé,heritage designation
 "Collegiate church of San Luis, Villagarcía de Campos",Renaissance architecture,architectural style
 Austria,Palais Erzherzog Albrecht,owner of
-漢,漢 (U+FA47),different from
+漢,漢 (U+FA47),CJKV variant character
 Republic of Cyprus,30953320234,total reserves
 Berlin Südkreuz station,InterCityExpress,connecting line
 Movistar 2017,2017-01-01,point in time
@@ -1398,7 +1398,7 @@ Iran at the 1998 FIFA World Cup,Iran at the FIFA World Cup,part of the series
 cerium-124,66,atomic number
 Rotterdam,Ahmed Aboutaleb,head of government
 Vallinsgrundet,1974-01-01,inception
-Munich massacre,hostage crisis,armament
+Munich massacre,hostage crisis,instance of
 USS Nanticoke,harbor tugboat,manufacturer
 Wikidata as semantic representation platform of the scientific achievements of the biomedical Collaborative Research Centre 1002,1,number of pages
 North Pond Wildlife Trail,North Pond Wildlife Trail,native label
@@ -1739,7 +1739,7 @@ bismuth-197,-1,parity quantum number
 Toki Pona,subject–verb–object,linguistic typology
 King Edward Primary School,North Tyneside,located in the administrative territorial entity
 cerium-126,1042430.382,binding energy
-Buk lesní v Třebovicích,solitary,has parts of the class
+Buk lesní v Třebovicích,solitary,instance of
 lead-186,185.984238196,mass
 Attic black-figure votive plate,3.5,height
 German People's Party,National Liberal Party,followed by
@@ -1835,7 +1835,7 @@ HD 223991,HD 223991A,has part
 Advisory Council for the National Transition,Spain,country
 Salacgrīva,city under municipality jurisdiction in Latvia,located in the administrative territorial entity
 CA Brive,Brive-la-Gaillarde,location
-11,2,prime factor
+11,2,number of decimal digits
 Tsu,Zhenjiang,located in the administrative territorial entity
 1985 Scottish Open Badminton Championships,1985-01-01,point in time
 Manpura Upazila,Bangladesh,country
@@ -1928,7 +1928,7 @@ francium-211,-1,parity quantum number
 Offenbach am Main,list of cultural heritage monuments in Offenbach am Main,list of monuments
 2015 Heilbronner Neckarcup,2015-05-17,end time
 [GBN2014] 31,237.8706,right ascension
-63,2,prime factor
+63,2,number of decimal digits
 Moskovsky District,Belovodskoye,contains administrative territorial entity
 Vatican Library ID,distinct values constraint,property constraint
 Trabalho por uma Paulista Sustentável,Green Party,political ideology
@@ -1936,7 +1936,7 @@ Trabalho por uma Paulista Sustentável,Green Party,political ideology
 Ben Vorlich,Arrochar Alps,mountain range
 Jiménez,Jiménez,family name identical to this given name
 Buk lesní v Třebovicích,22.0,height
-25,2,prime factor
+25,2,number of decimal digits
 SDSS J133751.31+362018.0,Gravitational lens,discovery method
 ruthenium-110,-80072.576,mass excess
 NGC 4235,0.158,parallax
@@ -1978,7 +1978,7 @@ Throgs Neck Bridge,Interstate 295,carries
 India,4.0,inflation rate
 Diccionario biográfico matritense,"version, edition, or translation",copyright status
 iron-63,543787.587,binding energy
-22,2,prime factor
+22,2,number of decimal digits
 lead-198,1560035.862,binding energy
 К̆,Cyrillic script,part of
 opinion joined by,always incomplete,expected completeness
@@ -2039,7 +2039,7 @@ Army Cottage with return verandah,listed on the Commonwealth Heritage List,herit
 acetaldehyde,23,median lethal dose (LD50)
 2005 European Figure Skating Championships - ice dancing compulsory dance,ISU Judging System,use
 Avatar 2,2021-12-17,publication date
-Ctiborův dub,solitary,has parts of the class
+Ctiborův dub,solitary,instance of
 The Paranoid Style in American Politics,conspiracy theory,main subject
 Pustomyty Raion,Ukraine,country
 FIDE World Chess Championship 1998,chess,sport
@@ -2518,7 +2518,7 @@ Solsonès,296600000,nominal GDP
 HMCS Provider,1963-09-28,service entry
 Milwaukee 6520-21,1.125,stroke
 1978 Uber Cup,women's team,competition class
-Lípa v Brtníkách,solitary,sex or gender
+Lípa v Brtníkách,solitary,instance of
 Bailyn,Bailyn,native label
 Parral,1795-01-01,inception
 1952 Liège–Bastogne–Liège,35.4,event distance
@@ -2603,7 +2603,7 @@ Epistle to the Colossians,New Testament,genre
 Dunman,scheduled monument,heritage designation
 iPhone 5,-20,non-operating temperature
 San Clemente Dormitory,Spain,country
-Arazi Brahmandihi,0,literate population
+Arazi Brahmandihi,0,number of households
 aperture,always incomplete,expected completeness
 Continentale Deutsche Luftreederei,Hamburg Airport,airline hub
 V* V346 Tau,3905,effective temperature
@@ -2674,7 +2674,7 @@ iPhone 4S,iOS 8,operating system
 "Disturbing Attachments: Genet, Modern Pederasty, and Queer History",Duke University Press,publisher
 francium-229,50.2,half-life
 Library of the University of Bologna,Italian national heritage,heritage designation
-Doctor Doppler,Sergio Pablos,performer
+Doctor Doppler,Sergio Pablos,contributor to the creative work or subject
 SL2S J020524-093023,Gravitational lens,part of
 ASTM D5135,ASTM standard,has edition
 The Larry Sanders Show,Columbia TriStar Television,production company
@@ -2755,7 +2755,7 @@ Quebec,Saint-Jean-Baptiste Day,public holiday
 Severe Tropical Storm Matmo,Matmo,named after
 Capital Airport Express,28.1,length
 German People's Party,1933-07-04,inception
-Lužecký klen,solitary,has parts of the class
+Lužecký klen,solitary,instance of
 Sandhammaren lighthouse,Admiralty List of Lights and Fog Signals,part of
 Kingsley Field Air National Guard Base,1248.0,elevation above sea level
 SN 2007bc,supernova,constellation
@@ -3055,7 +3055,7 @@ Kosmos 1074,unmanned spaceflight,significant event
 Together,EMI Records,record label
 DeWalt DW310,1.125,stroke
 [MCM2012] SA108 lens,Gravitational lens,part of
-Winchester House School,Brackley,headquarters location
+Winchester House School,Brackley,located in the administrative territorial entity
 Sainte-Sabine,Sainte-Justine,shares border with
 Witte Venn,Haaksbergen,located in the administrative territorial entity
 2018 Giro del Piemonte,Sonny Colbrelli,general classification of race participants
@@ -3135,7 +3135,7 @@ Operation Paperclip: The Secret Intelligence Program that Brought Nazi Scientist
 "2017 Giro d'Italia, Stage 14",Vincenzo Nibali,points classification
 James Webb Space Telescope,ELA-3,space launch vehicle
 Sentinel-1B,Ensemble de Lancement Soyouz,part of
-海,Big5 character,subclass of
+海,Big5 character,instance of
 Park Güell,La Salut,location
 Evian Resort Golf Club,72,par
 LCLG-12 062,169.050042,right ascension
@@ -3280,7 +3280,7 @@ Soyuz TMA-11,2008-04-19,time of spacecraft landing
 Comarcal Council of Ribera d'Ebre,Ribera d'Ebre,headquarters location
 Second Epistle to the Thessalonians,Paul,author
 Osaka metropolitan area,Osaka Bay,located in or next to body of water
-Alphonse Allard Fonds,fonds,instance of
+Alphonse Allard Fonds,fonds,level of description
 漢,14,stroke count
 Sonnet 80,Sonnet 81,followed by
 Mol Continuity,Koyo Dockyard,official name
@@ -3400,7 +3400,7 @@ Clayton Township,charter township of Michigan,located in the administrative terr
 1963 Belgian Badminton Championships,1964 Belgian Badminton Championships,followed by
 1987 Dow Chemical Classic,1987 Dow Chemical Classic – Singles,has part
 Charlie Hebdo,Gérard Biard,owned by
-Drážní buk,solitary,has parts of the class
+Drážní buk,solitary,instance of
 GeoGebra,Microsoft Windows,platform
 Louise Thompson Patterson: A Life of Struggle for Justice,Duke University Press,publisher
 Legislative Assembly of Pernambuco,Joaquim Nabuco Palace,headquarters location
@@ -3456,14 +3456,14 @@ oleic acid,17.0,melting point
 "Alexander and the Terrible, Horrible, No Good, Very Bad Day",2.35:1,aspect ratio
 Kosmos 613,unmanned spaceflight,significant event
 Queen Grimhilde,accident,manner of death
-18,2,prime factor
+18,2,number of decimal digits
 scandium-43,calcium-43,decays to
 UCAC4 437-017603,0.02,metallicity
 "PDF Reference, fifth edition",technical specification,copyright license
 Inter FS,Pabellón Fundación Montemadrid,home venue
 Whitehouse Primary School,North Tyneside,located in the administrative territorial entity
 University of Paris VI: Pierre-and-Marie-Curie University,European University Association,affiliation
-Milano Porta Garibaldi,1,fare zone
+Milano Porta Garibaldi,1,number of platform faces
 Battle of Peebles's Farm,Dinwiddie County,location
 União Trabalhista por Passo Fundo,Brazilian Labour Party,has part
 ESO-HA 1497,Orion,constellation
@@ -3607,7 +3607,7 @@ Anambra State,1976-02-03,inception
 It Might Be Time,single,distribution format
 The Dorchester,Owen Williams,architect
 The Invisible Man,public domain,copyright status
-Kyoto Animation arson attack,lighter,number of deaths
+Kyoto Animation arson attack,lighter,armament
 Hegemone,0.328,orbital eccentricity
 Thrissur,Thrissur district,located in the administrative territorial entity
 Kerman,masterpiece of human creative genius,World Heritage criteria
@@ -3653,7 +3653,7 @@ Sandhammaren lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",list of
 Marina di Maratea railway halt,Rete Ferroviaria Italiana,operator
 Krāslava,city under municipality jurisdiction in Latvia,located in the administrative territorial entity
 "Eastern view of Wrexham church, from Mount street",Frederick Peake,publisher
-Hladový buk u Dětřichovce,solitary,has parts of the class
+Hladový buk u Dětřichovce,solitary,instance of
 Green damask wall hangings,rinceau,location
 Delirium,female,sex or gender
 San Michele in Bosco railway halt,railway halt,use
@@ -3669,7 +3669,7 @@ Bonk,Terry McGinnis,enemy of
 Colegio Mayor Universitario San Juan Evangelista,Spain,country
 2017 Vuelta a España,2018 Vuelta a España,followed by
 Odalisque with Slave,nude,depicts
-Tepelský dub,solitary,sex or gender
+Tepelský dub,solitary,instance of
 [RHS2000] 1-1106,Orion,constellation
 Dongsheng Manchu and Mongol Ethnic Township,Kaoshantun,contains administrative territorial entity
 Line 13,Beijing Mass Transit Railway Operation Corporation Limited,operator
@@ -3932,7 +3932,7 @@ Port de Valldemossa,Spain,country
 Spartans W.F.C.,Edinburgh,headquarters location
 1994 Winter Olympics,Nordic combined at the 1994 Winter Olympics,has part
 La Plata County,La Plata County,native label
-Chak Modpur,0,literate population
+Chak Modpur,0,number of households
 N51 road,Hainaut,located in the administrative territorial entity
 Koll Rock,Antarctica,continent
 caesium-147,-51920.064,mass excess
@@ -3973,7 +3973,7 @@ Conovium,Conwy,port of registry
 Twenty-ninth Conference on Neural Information Processing Systems,2015-12-07,start time
 The Godfather Part II,color,color
 2009 Giro di Lombardia,2008 Giro di Lombardia,follows
-2018 Clásico RCN,Óscar Sevilla,general classification of race participants
+2018 Clásico RCN,Óscar Sevilla,combination classification
 Bosphorus Istanbul Cup 2018 - senior ice dance rhythm dance,Turkey,country
 Botulinum Toxin,Elsevier,publisher
 UGC 6818,807.0,radial velocity
@@ -4059,7 +4059,7 @@ Gamelan joged bumbung,Bali,located in the administrative territorial entity
 Ivor Clay,Australia,country
 Colegio Mayor Universitario Chaminade,1966-01-01,inception
 osmium-182,21.84,half-life
-31,2,prime factor
+31,2,number of decimal digits
 Sedgwick County,Deuel County,shares border with
 "2017 Vuelta a España, Stage 15",Spain,country
 Parumleo,3.5949,parallax
