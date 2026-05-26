@@ -1,18 +1,23 @@
-import csv
+import pandas as pd
+import sys
 
-test_file = r'f:\github\SCNU_AI_Competition_2026\dataset\test.csv'
+sys.stdout.reconfigure(encoding='utf-8')
 
-subjects = {
-    'Raspenava', 'Heerhugowaard', 'Răcari', 'Přibyslav', 'Xibër', 'Nikël', 'Selishtë', 
-    'Levan, Fier', 'Trutnov', 'Haarlemmermeer', 'Labinot-Fushë', 'Potcoava', 'Sukth', 
-    'Murgeni', 'Shtiqën', 'Kolsh', 'Roznov'
-}
+test_df = pd.read_csv('dataset/test.csv')
+sub_df = pd.read_csv('result/submission_final.csv')
 
-with open(test_file, 'r', encoding='utf-8-sig') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        s = row['Subject'].strip()
-        o = row['Object'].strip()
-        if s in subjects:
-            line = f"Test candidate: {s} -> {o}"
-            print(line.encode('utf-8', errors='replace').decode('gbk', errors='replace'))
+# Load located in the administrative territorial entity.csv from training
+df_loc = pd.read_csv('dataset/Train_Set/located in the administrative territorial entity.csv')
+
+# Create a set of (Object, Subject) pairs from training
+train_pairs = set(zip(df_loc['Subject'], df_loc['Object']))
+
+# Search test set for reversed pairs
+for idx, row in test_df.iterrows():
+    s = row['Subject']
+    o = row['Object']
+    pred = sub_df.loc[idx, 'Label']
+    
+    # If the reversed pair (o, s) exists in training located-in relation
+    if (o, s) in train_pairs:
+        print(f"Row {idx:4d} | Subject: '{s}' (municipality/larger) | Object: '{o}' (village/smaller) | Pred: '{pred}'")

@@ -1,7 +1,16 @@
-import csv
-ships = ['Cosco Africa', 'Cosco America', 'Silja Serenade', 'Gerner Maersk', 'Ciudad de Palma', 'USNS Kane', 'Maersk Nimes', 'HMS Beagle', 'RV Derinsu', 'Stickers Gat', 'Santa Isabel', 'Cruise Olympia', 'RV MTA Turkuaz', 'Cap Harvey', 'Stena Nautica', 'MS Norman Atlantic', 'Huckleberry Finn', 'SAS Protea', 'Sagitta']
-with open(r'f:\github\SCNU_AI_Competition_2026\result\submission_0.747.csv', 'r', encoding='utf-8-sig') as f:
-    for row in f:
-        for s in ships:
-            if s in row:
-                print(row.strip())
+import pandas as pd
+import sys
+
+sys.stdout.reconfigure(encoding='utf-8')
+
+test_df = pd.read_csv('dataset/test.csv')
+sub_df = pd.read_csv('result/submission_final.csv')
+
+ship_prefixes = ('SS ', 'MS ', 'MV ', 'RV ')
+ship_mask = test_df['Subject'].astype(str).str.startswith(ship_prefixes)
+
+for idx in test_df[ship_mask].index:
+    sub = test_df.loc[idx, 'Subject']
+    obj = test_df.loc[idx, 'Object']
+    pred = sub_df.loc[idx, 'Label']
+    print(f"Row {idx:4d} | {sub} -> {obj} | Pred: {pred}")
