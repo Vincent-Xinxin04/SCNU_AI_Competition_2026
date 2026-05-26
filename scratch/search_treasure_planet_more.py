@@ -10,11 +10,11 @@ characters = ['Amelia', 'Hawkins', 'Scroop', 'Treasure Planet', 'Ranieri', 'Pabl
 
 for idx, row in test_df.iterrows():
     s = str(row['Subject']).strip()
-    o = str(row['Object']).strip()
+    o = str(row['Object']).strip()  
     pred = sub_df.loc[idx, 'Label']
     
     match = False
-    for c in characters:
+    for c in characters:  
         if c in s or c in o:
             match = True
             break

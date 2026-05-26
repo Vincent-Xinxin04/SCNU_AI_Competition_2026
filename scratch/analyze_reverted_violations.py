@@ -46,9 +46,9 @@ for f in train_files:
             'sample_count': len(df)
         }
 
-# Load test and submission_final
+# Load test and submission_reverted
 test_df = pd.read_csv("dataset/test.csv")
-sub_df = pd.read_csv("result/submission_final.csv")
+sub_df = pd.read_csv("result/submission_reverted.csv")
 
 violations = []
 for idx, row in test_df.iterrows():
@@ -82,9 +82,6 @@ for idx, row in test_df.iterrows():
                 'Sample_Count': profile['sample_count']
             })
 
-with open("scratch/type_violations.txt", "w", encoding="utf-8") as out:
-    out.write(f"Total violations found: {len(violations)}\n")
-    for v in violations:
-        out.write(f"Row {v['row']:4d}: (Sub: {v['Subject']}, Obj: {v['Object']}) [{v['Object_Type']}] | Pred: {v['Pred']} (expects {v['Expected_Type']}, train count: {v['Sample_Count']})\n")
-
-print(f"Saved {len(violations)} violations to scratch/type_violations.txt")
+print(f"Total violations found in reverted submission: {len(violations)}")
+for v in violations:
+    print(f"Row {v['row']:4d}: (Sub: {v['Subject']}, Obj: {v['Object']}) [{v['Object_Type']}] | Pred: {v['Pred']} (expects {v['Expected_Type']}, train count: {v['Sample_Count']})")

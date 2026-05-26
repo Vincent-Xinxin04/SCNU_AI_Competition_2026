@@ -3,7 +3,7 @@ Checking for candidate matches for unpredicted labels:
 
 --- Label: CJKV variant character ---
   Subject-only matches in Test (different objects):
-    Row 3136: 海 -> Big5 character | Current Pred: subclass of
+    Row 3136: 海 -> Big5 character | Current Pred: instance of
 
 --- Label: VAT-rate ---
   Subject-only matches in Test (different objects):
@@ -142,7 +142,7 @@ Checking for candidate matches for unpredicted labels:
 
 --- Label: has decorative pattern ---
   Subject-only matches in Test (different objects):
-    Row 2290: Appliqué inv. 848 -> appliqué | Current Pred: significant event
+    Row 2290: Appliqué inv. 848 -> appliqué | Current Pred: fabrication method
     Row 2433: Appliqué inv. 734 -> appliqué | Current Pred: fabrication method
     Row 2509: Appliqué inv. 733 -> appliqué | Current Pred: fabrication method
     Row 2966: Appliqué inv. 733 -> 8.0 | Current Pred: height
@@ -164,7 +164,7 @@ Checking for candidate matches for unpredicted labels:
 
 --- Label: level of description ---
   Exact triplet matches in Test:
-    Row 3281: Alphonse Allard Fonds -> fonds | Current Pred: instance of
+    Row 3281: Alphonse Allard Fonds -> fonds | Current Pred: level of description
 
 --- Label: located in the ecclesiastical territorial entity ---
   Subject-only matches in Test (different objects):
@@ -204,7 +204,7 @@ Checking for candidate matches for unpredicted labels:
 
 --- Label: name ---
   Subject-only matches in Test (different objects):
-    Row 659: Nenque -> Phoenix | Current Pred: said to be the same as
+    Row 659: Nenque -> Phoenix | Current Pred: constellation
     Row 875: Nushagak -> 14790 | Current Pred: surface gravity
     Row 3073: Epsilon Eridani b -> 53.232687333 | Current Pred: right ascension
 
@@ -336,5 +336,5 @@ Checking for candidate matches for unpredicted labels:
 
 --- Label: young rider classification ---
   Subject-only matches in Test (different objects):
-    Row 963: 2016 Volta a Portugal -> José Gonçalves | Current Pred: mountains classification
+    Row 963: 2016 Volta a Portugal -> José Gonçalves | Current Pred: general classification of race participants
     Row 1235: 2013 Danmark Rundt -> 2013-08-04 | Current Pred: end time

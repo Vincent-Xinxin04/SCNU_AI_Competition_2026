@@ -1,0 +1,137 @@
+Scanning for small edit distance pairs in test set...
+Row   13 | Sub: 2016 Volta a Catalunya              | Obj: 2017 Volta a Catalunya              | Dist: 1 | Current Pred: followed by
+Row  112 | Sub: れ                                   | Obj: レ                                   | Dist: 1 | Current Pred: has part
+Row  152 | Sub: 1968 Irish Open Badminton Championships | Obj: 1967 Irish Open Badminton Championships | Dist: 1 | Current Pred: follows
+Row  173 | Sub: Miss USA 2013                       | Obj: Miss USA 2012                       | Dist: 1 | Current Pred: follows
+Row  244 | Sub: 830s BC                             | Obj: 820s BC                             | Dist: 1 | Current Pred: followed by
+Row  250 | Sub: 2019 Le Samyn                       | Obj: 2018 Le Samyn                       | Dist: 1 | Current Pred: follows
+Row  275 | Sub: 2006 Tirreno–Adriatico              | Obj: 2007 Tirreno–Adriatico              | Dist: 1 | Current Pred: followed by
+Row  293 | Sub: 1991 UCI Road World Championships – Women's road race | Obj: 1993 UCI Road World Championships – Women's road race | Dist: 1 | Current Pred: followed by
+Row  338 | Sub: Uganda                              | Obj: Ugandan                             | Dist: 1 | Current Pred: demonym
+Row  420 | Sub: 1958 Belgian Badminton Championships | Obj: 1959 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row  437 | Sub: Maine                               | Obj: Mainer                              | Dist: 1 | Current Pred: demonym
+Row  448 | Sub: 20s                                 | Obj: 30s                                 | Dist: 1 | Current Pred: part of
+Row  452 | Sub: Mendizabal                          | Obj: Mendizábal                          | Dist: 1 | Current Pred: different from
+Row  471 | Sub: 1954 European Rowing Championships  | Obj: 1955 European Rowing Championships  | Dist: 1 | Current Pred: followed by
+Row  501 | Sub: 1974 German Open Badminton Championships | Obj: 1973 German Open Badminton Championships | Dist: 1 | Current Pred: follows
+Row  537 | Sub: 2017 Volta a Catalunya              | Obj: 2018 Volta a Catalunya              | Dist: 1 | Current Pred: followed by
+Row  689 | Sub: World Esperanto Congress 1935       | Obj: World Esperanto Congress 1936       | Dist: 1 | Current Pred: followed by
+Row  784 | Sub: 漢                                   | Obj: 汉                                   | Dist: 1 | Current Pred: CJKV variant character
+Row  814 | Sub: 1965 Belgian Badminton Championships | Obj: 1966 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row  909 | Sub: 1998 Irish Open Badminton Championships | Obj: 1999 Irish Open Badminton Championships | Dist: 1 | Current Pred: followed by
+Row  984 | Sub: 2010 African Badminton Championships | Obj: 2011 African Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 1033 | Sub: 1996 Irish Open Badminton Championships | Obj: 1997 Irish Open Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 1038 | Sub: 1968 Belgian Badminton Championships | Obj: 1969 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 1073 | Sub: 1964 Belgian Badminton Championships | Obj: 1965 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 1189 | Sub: 1959 Belgian Badminton Championships | Obj: 1960 Belgian Badminton Championships | Dist: 2 | Current Pred: followed by
+Row 1191 | Sub: de la Cruz                          | Obj: De la Cruz                          | Dist: 0 | Current Pred: different from
+Row 1229 | Sub: 2009 Pan American Badminton Championships | Obj: 2010 Pan American Badminton Championships | Dist: 2 | Current Pred: followed by
+Row 1290 | Sub: 2017 Le Samyn                       | Obj: 2018 Le Samyn                       | Dist: 1 | Current Pred: followed by
+Row 1302 | Sub: 781                                 | Obj: 11                                  | Dist: 2 | Current Pred: prime factor
+Row 1336 | Sub: 1953 European Rowing Championships  | Obj: 1954 European Rowing Championships  | Dist: 1 | Current Pred: followed by
+Row 1342 | Sub: HD 42954                            | Obj: HD 42954B                           | Dist: 1 | Current Pred: companion of
+Row 1344 | Sub: 2019 Le Samyn                       | Obj: 2020 Le Samyn                       | Dist: 2 | Current Pred: followed by
+Row 1347 | Sub: 2018 Connecticut Open               | Obj: 2017 Connecticut Open               | Dist: 1 | Current Pred: follows
+Row 1348 | Sub: Self Portrait                       | Obj: Self-portrait                       | Dist: 1 | Current Pred: title
+Row 1421 | Sub: Miss USA 2015                       | Obj: Miss USA 2014                       | Dist: 1 | Current Pred: follows
+Row 1539 | Sub: 2018 Clásico RCN                    | Obj: 2019 Clásico RCN                    | Dist: 1 | Current Pred: followed by
+Row 1559 | Sub: HD 125040                           | Obj: HD 125040A                          | Dist: 1 | Current Pred: has part
+Row 1569 | Sub: Μ                                   | Obj: Ν                                   | Dist: 1 | Current Pred: follows
+Row 1607 | Sub: Tour du Rwanda 2013                 | Obj: Tour du Rwanda 2014                 | Dist: 1 | Current Pred: followed by
+Row 1631 | Sub: Miss USA 2014                       | Obj: Miss USA 2013                       | Dist: 1 | Current Pred: follows
+Row 1688 | Sub: 2017 Le Samyn                       | Obj: 2016 Le Samyn                       | Dist: 1 | Current Pred: follows
+Row 1689 | Sub: 1901 FA Cup Final                   | Obj: 1900 FA Cup Final                   | Dist: 1 | Current Pred: follows
+Row 1734 | Sub: Mega Man                            | Obj: Mega Man X                          | Dist: 2 | Current Pred: present in work
+Row 1758 | Sub: 1994 Irish Open Badminton Championships | Obj: 1995 Irish Open Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 1794 | Sub: 1159                                | Obj: 19                                  | Dist: 2 | Current Pred: prime factor
+Row 1832 | Sub: HD 223991                           | Obj: HD 223991A                          | Dist: 1 | Current Pred: has part
+Row 1836 | Sub: 11                                  | Obj: 2                                   | Dist: 2 | Current Pred: number of decimal digits
+Row 1849 | Sub: 2017 Tour Down Under                | Obj: 2018 Tour Down Under                | Dist: 1 | Current Pred: followed by
+Row 1863 | Sub: 2017 Connecticut Open               | Obj: 2016 Connecticut Open               | Dist: 1 | Current Pred: follows
+Row 1876 | Sub: Apollo 14                           | Obj: Apollo 13                           | Dist: 1 | Current Pred: follows
+Row 1904 | Sub: 2018 AFC Women's Asian Cup qualification | Obj: 2014 AFC Women's Asian Cup qualification | Dist: 1 | Current Pred: follows
+Row 1929 | Sub: 63                                  | Obj: 2                                   | Dist: 2 | Current Pred: number of decimal digits
+Row 1937 | Sub: 25                                  | Obj: 2                                   | Dist: 1 | Current Pred: number of decimal digits
+Row 1963 | Sub: 2018 Le Samyn                       | Obj: 2017 Le Samyn                       | Dist: 1 | Current Pred: follows
+Row 1971 | Sub: 2018 UCI Road World Championships – Women's road race | Obj: 2019 UCI Road World Championships – Women's road race | Dist: 1 | Current Pred: followed by
+Row 1979 | Sub: 22                                  | Obj: 2                                   | Dist: 1 | Current Pred: number of decimal digits
+Row 2069 | Sub: 2016 Le Samyn                       | Obj: 2017 Le Samyn                       | Dist: 1 | Current Pred: followed by
+Row 2115 | Sub: 2018 Vuelta del Uruguay stage 2a    | Obj: 2018 Vuelta del Uruguay stage 2b    | Dist: 1 | Current Pred: followed by
+Row 2134 | Sub: Visby Novisen 4                     | Obj: Visby Novisen 5                     | Dist: 1 | Current Pred: shares border with
+Row 2148 | Sub: 2009 Virginia gubernatorial election | Obj: 2013 Virginia gubernatorial election | Dist: 2 | Current Pred: followed by
+Row 2198 | Sub: 1973 German Open Badminton Championships | Obj: 1972 German Open Badminton Championships | Dist: 1 | Current Pred: follows
+Row 2203 | Sub: Apollo 15                           | Obj: Apollo 14                           | Dist: 1 | Current Pred: follows
+Row 2213 | Sub: 1930 European Rowing Championships  | Obj: 1931 European Rowing Championships  | Dist: 1 | Current Pred: followed by
+Row 2337 | Sub: Visby Novisen 5                     | Obj: Visby Novisen 6                     | Dist: 1 | Current Pred: shares border with
+Row 2365 | Sub: 2013 Tour des Fjords, Stage 3       | Obj: 2013 Tour des Fjords, Stage 4       | Dist: 1 | Current Pred: followed by
+Row 2393 | Sub: 1962 Belgian Badminton Championships | Obj: 1963 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 2395 | Sub: 1966 Belgian Badminton Championships | Obj: 1967 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 2402 | Sub: 2009 African Badminton Championships | Obj: 2010 African Badminton Championships | Dist: 2 | Current Pred: followed by
+Row 2429 | Sub: 2000 Estonian Badminton Championships | Obj: 2001 Estonian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 2444 | Sub: Honda CT110                         | Obj: Honda CT90                          | Dist: 2 | Current Pred: follows
+Row 2446 | Sub: Athletics at the 2004 Summer Olympics – Men's 200 metres | Obj: Athletics at the 2000 Summer Olympics – Men's 200 metres | Dist: 1 | Current Pred: follows
+Row 2491 | Sub: 2nd German Bundestag                | Obj: 3rd German Bundestag                | Dist: 2 | Current Pred: followed by
+Row 2525 | Sub: HD 223991                           | Obj: HD 223991B                          | Dist: 1 | Current Pred: companion of
+Row 2546 | Sub: 1997 Irish Open Badminton Championships | Obj: 1998 Irish Open Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 2572 | Sub: Norwegian Badminton Championships 2026 | Obj: Norwegian Badminton Championships 2025 | Dist: 1 | Current Pred: follows
+Row 2600 | Sub: 1873 FA Cup Final                   | Obj: 1872 FA Cup Final                   | Dist: 1 | Current Pred: follows
+Row 2630 | Sub: 漢                                   | Obj: 13                                  | Dist: 2 | Current Pred: stroke count
+Row 2638 | Sub: N51 road                            | Obj: R5 road                             | Dist: 2 | Current Pred: terminus
+Row 2656 | Sub: Soyuz TMA-10                        | Obj: Soyuz TMA-9                         | Dist: 2 | Current Pred: follows
+Row 2685 | Sub: Norwegian Badminton Championships 2025 | Obj: Norwegian Badminton Championships 2024 | Dist: 1 | Current Pred: follows
+Row 2695 | Sub: 1964 European Rowing Championships  | Obj: 1963 European Rowing Championships  | Dist: 1 | Current Pred: follows
+Row 2704 | Sub: Β                                   | Obj: 𐤁                                   | Dist: 1 | Current Pred: different from
+Row 2712 | Sub: 2015 Connecticut Open               | Obj: 2014 Connecticut Open               | Dist: 1 | Current Pred: follows
+Row 2744 | Sub: 2012 Tokyo gubernatorial election   | Obj: 2014 Tokyo gubernatorial election   | Dist: 1 | Current Pred: followed by
+Row 2760 | Sub: 830s BC                             | Obj: 835 BC                              | Dist: 2 | Current Pred: followed by
+Row 2786 | Sub: 2000 Clásica de San Sebastián       | Obj: 2001 Clásica de San Sebastián       | Dist: 1 | Current Pred: followed by
+Row 2787 | Sub: 1952                                | Obj: 1951                                | Dist: 1 | Current Pred: follows
+Row 2815 | Sub: Sonnet 69                           | Obj: Sonnet 70                           | Dist: 2 | Current Pred: followed by
+Row 2820 | Sub: 1992 Irish Open Badminton Championships | Obj: 1993 Irish Open Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 2822 | Sub: 2008 US Open Badminton Championships | Obj: 2007 US Open Badminton Championships | Dist: 1 | Current Pred: follows
+Row 2832 | Sub: Glazer Children’s Museum            | Obj: GLAZER CHILDREN'S MUSEUM            | Dist: 1 | Current Pred: official name
+Row 2848 | Sub: 1967 Belgian Badminton Championships | Obj: 1968 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 2867 | Sub: 4th German Bundestag                | Obj: 5th German Bundestag                | Dist: 1 | Current Pred: followed by
+Row 2887 | Sub: 1960 Belgian Badminton Championships | Obj: 1961 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 2903 | Sub: 1898 World Allround Speed Skating Championships for men | Obj: 1897 World Allround Speed Skating Championships for men | Dist: 1 | Current Pred: follows
+Row 2927 | Sub: 2018 Tour de France, stage 20       | Obj: 2018 Tour de France, stage 19       | Dist: 2 | Current Pred: follows
+Row 2932 | Sub: 1997 FA Cup Final                   | Obj: 1998 FA Cup Final                   | Dist: 1 | Current Pred: followed by
+Row 2978 | Sub: 2016 Le Samyn                       | Obj: 2015 Le Samyn                       | Dist: 1 | Current Pred: follows
+Row 3101 | Sub: 2010 Uber Cup – Qualification Asia  | Obj: 2012 Uber Cup – Qualification Asia  | Dist: 1 | Current Pred: followed by
+Row 3103 | Sub: 2nd U-boat Flotilla                 | Obj: 3rd U-boat Flotilla                 | Dist: 2 | Current Pred: followed by
+Row 3123 | Sub: 1948                                | Obj: 1947                                | Dist: 1 | Current Pred: follows
+Row 3144 | Sub: 1907 Giro del Piemonte              | Obj: 1908 Giro del Piemonte              | Dist: 1 | Current Pred: followed by
+Row 3162 | Sub: 1995 Irish Open Badminton Championships | Obj: 1996 Irish Open Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 3173 | Sub: 2017 Clásico RCN                    | Obj: 2018 Clásico RCN                    | Dist: 1 | Current Pred: followed by
+Row 3275 | Sub: 1993 Internationaux de Strasbourg   | Obj: 1992 Internationaux de Strasbourg   | Dist: 1 | Current Pred: follows
+Row 3282 | Sub: 漢                                   | Obj: 14                                  | Dist: 2 | Current Pred: stroke count
+Row 3283 | Sub: Sonnet 80                           | Obj: Sonnet 81                           | Dist: 1 | Current Pred: followed by
+Row 3308 | Sub: 1993 Irish Open Badminton Championships | Obj: 1994 Irish Open Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 3345 | Sub: ゆ                                   | Obj: ユ                                   | Dist: 1 | Current Pred: has part
+Row 3351 | Sub: Visby Novisen 6                     | Obj: Visby Novisen 5                     | Dist: 1 | Current Pred: shares border with
+Row 3381 | Sub: 2018 Le Samyn                       | Obj: 2019 Le Samyn                       | Dist: 1 | Current Pred: followed by
+Row 3398 | Sub: 1963 Belgian Badminton Championships | Obj: 1964 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 3457 | Sub: 18                                  | Obj: 2                                   | Dist: 2 | Current Pred: number of decimal digits
+Row 3539 | Sub: Athletics at the 2012 Summer Olympics – Men's 200 metres | Obj: Athletics at the 2008 Summer Olympics – Men's 200 metres | Dist: 2 | Current Pred: follows
+Row 3574 | Sub: 1997 FA Cup Final                   | Obj: 1996 FA Cup Final                   | Dist: 1 | Current Pred: follows
+Row 3589 | Sub: World Esperanto Congress 1921       | Obj: World Esperanto Congress 1922       | Dist: 1 | Current Pred: followed by
+Row 3591 | Sub: 1961 Belgian Badminton Championships | Obj: 1962 Belgian Badminton Championships | Dist: 1 | Current Pred: followed by
+Row 3668 | Sub: 2017 Vuelta a España                | Obj: 2018 Vuelta a España                | Dist: 1 | Current Pred: followed by
+Row 3716 | Sub: Soyuz TM-21                         | Obj: Soyuz TM-20                         | Dist: 1 | Current Pred: follows
+Row 3718 | Sub: Ion Mobility Spectrometry           | Obj: Ion mobility spectrometry           | Dist: 0 | Current Pred: main subject
+Row 3720 | Sub: 2017 Women's European Volleyball Championship qualification | Obj: 2019 Women's European Volleyball Championship qualification | Dist: 1 | Current Pred: followed by
+Row 3725 | Sub: Athletics at the 2008 Summer Olympics – Men's 200 metres | Obj: Athletics at the 2004 Summer Olympics – Men's 200 metres | Dist: 1 | Current Pred: follows
+Row 3729 | Sub: 2001 US Open Badminton Championships | Obj: 2000 US Open Badminton Championships | Dist: 1 | Current Pred: follows
+Row 3751 | Sub: 1987 UCI Road World Championships – Women's road race | Obj: 1989 UCI Road World Championships – Women's road race | Dist: 1 | Current Pred: followed by
+Row 3770 | Sub: Norwegian Badminton Championships 2027 | Obj: Norwegian Badminton Championships 2026 | Dist: 1 | Current Pred: follows
+Row 3777 | Sub: 1990 UCI Road World Championships – Women's road race | Obj: 1991 UCI Road World Championships – Women's road race | Dist: 1 | Current Pred: followed by
+Row 3784 | Sub: Botulinum Toxin                     | Obj: Botulinum toxin                     | Dist: 0 | Current Pred: main subject
+Row 3792 | Sub: 2006 NBA Playoffs                   | Obj: 2005 NBA Playoffs                   | Dist: 1 | Current Pred: follows
+Row 3822 | Sub: 1993 UCI Road World Championships – Women's road race | Obj: 1994 UCI Road World Championships – Women's road race | Dist: 1 | Current Pred: followed by
+Row 3845 | Sub: 1989 UCI Road World Championships – Women's road race | Obj: 1990 UCI Road World Championships – Women's road race | Dist: 2 | Current Pred: followed by
+Row 3973 | Sub: 2009 Giro di Lombardia              | Obj: 2008 Giro di Lombardia              | Dist: 1 | Current Pred: follows
+Row 4009 | Sub: 5th German Bundestag                | Obj: 6th German Bundestag                | Dist: 1 | Current Pred: followed by
+Row 4024 | Sub: 1901 FA Cup Final                   | Obj: 1902 FA Cup Final                   | Dist: 1 | Current Pred: followed by
+Row 4038 | Sub: 2016 Connecticut Open               | Obj: 2015 Connecticut Open               | Dist: 1 | Current Pred: follows
+Row 4060 | Sub: 31                                  | Obj: 2                                   | Dist: 2 | Current Pred: number of decimal digits
+Total small edit distance pairs: 135

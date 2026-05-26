@@ -1,0 +1,6 @@
+Total violations found: 5
+Row 1642: (Sub: September 1997, Obj: 1997) [year_or_int] | Pred: part of (expects entity, train count: 1046)
+Row 2189: (Sub: Gateway Of Carnarvon Castle, Obj: t1154233968) [entity] | Pred: inception (expects date, train count: 1120)
+Row 2379: (Sub: 1944, Obj: 1944) [year_or_int] | Pred: different from (expects entity, train count: 211)
+Row 2787: (Sub: 1952, Obj: 1951) [year_or_int] | Pred: follows (expects entity, train count: 644)
+Row 3123: (Sub: 1948, Obj: 1947) [year_or_int] | Pred: follows (expects entity, train count: 644)
