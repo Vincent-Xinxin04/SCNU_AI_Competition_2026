@@ -1,4 +1,4 @@
-Subject,Object,Label
+﻿Subject,Object,Label
 The Convent,official residence,has facility
 Thé Rajah,625.0,height
 Marjaniemi lighthouse,Hampus Dalström,architect
@@ -226,7 +226,7 @@ September 11 attacks,suicide attack,instance of
 Chidley Point,Western Australia,located in the administrative territorial entity
 Kinpurney Hill,scheduled monument,heritage designation
 iron-51,-1,parity quantum number
-Häradskär lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",part of
+Häradskär lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 Xibër,municipality of Albania,located in the administrative territorial entity
 Saving the Security State: Exceptional Citizens in Twenty-First-Century America,Duke University Press,publisher
 So Fresh: The Hits of Spring 2008 + Bonus DVD,video album,distribution format
@@ -454,12 +454,12 @@ RNA polymerase sigma-70,RNA polymerase sigma-70 like domain,has part
 Mendizabal,Mendizábal,different from
 Udmurt,Udmurt Republic,located in the administrative territorial entity
 Mateh Binyamin Regional Council,Israel,country
-Svenska Högarna lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",list of monuments
+Svenska Högarna lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 1975 NBA Draft,David Thompson,significant person
 Kopung County,North Korea,country
 Monroe Golf Club,golf,sport
 Saint Isaac's Cathedral,orthodox cathedral,religion
-Ulkokalla Lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",part of
+Ulkokalla Lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 Palácio do Planalto,official residence,use
 Cyrus the Great,-0599-01-01T00:00:00Z,date of birth
 Mirzaganj Upazila,Bangladesh,country
@@ -525,7 +525,7 @@ Faculdade Cásper Líbero,São Paulo,located in the administrative territorial e
 Cooma-Monaro Shire,845.0,elevation above sea level
 pessimism,attitude,subclass of
 "2018 Sibiu Cycling Tour, stage 3A",Cisnădie,destination point
-Kunduakori,0,number of households
+Kunduakori,0,literate population
 Forn de pa artesà,Spain,country
 Tintern Abbey,Cistercians,religious order
 Japan,Albania,diplomatic relation
@@ -561,7 +561,7 @@ Linna Golf Club,golf,sport
 East Stack,Antarctica,continent
 La Cruz Canton,Liberia Canton,shares border with
 KV46,list of burials in the Valley of the Kings,part of
-Pater Noster lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",list of monuments
+Pater Noster lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 antibacterial peptide LL-37,Homo sapiens,cell component
 Belgium at the 2018 FIFA World Cup,3,ranking
 Tilbury Fort,scheduled monument,heritage designation
@@ -651,7 +651,7 @@ SN 2007bo,supernova,constellation
 Wests Tigers,National Rugby League,league
 Golf Club de Chamonix,72,par
 The Right to Maim,Duke University Press,publisher
-Sälskär lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",list of monuments
+Sälskär lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 Dundee Law,Dundee Law,official name
 GUVV J164725.0-015505.9,11.9,apparent magnitude
 Ulkokalla Lighthouse,Hampus Dalström,architect
@@ -754,7 +754,7 @@ Erendis,female,sex or gender
 Krasnohrad Raion,Ukraine,country
 2006 Illinois gubernatorial election,Judy Baar Topinka,candidate
 Marjory Stoneman Douglas High School shooting,Alyssa Alhadeff,participant
-Hällgrund,"NGA List of Lights, Radio Aids and Fog Signals",list of monuments
+Hällgrund,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 Laboratory of Theoretical Biochemistry,1997-01-01,inception
 Chaldean Catholic Archeparchy of Kirkuk,Iraq,country
 D33 J013355.0+304643.2,20.364,apparent magnitude
@@ -904,7 +904,7 @@ Clwyd County Council,Clwyd,applies to jurisdiction
 Bahçeli Kayaları,Turkey,country
 1995 European Grand Prix,David Coulthard,pole position
 Perlesreut,562.0,elevation above sea level
-list of A6 roads,road,different from
+list of A6 roads,road,is a list of
 Derive,Microsoft Windows,platform
 Biblioteca Medicea Laurenziana,State public library,use
 passion,psychology,part of
@@ -1570,7 +1570,7 @@ Macina Cercle,Mali,country
 Nayagarh district,Nayagarh subdivision,contains administrative territorial entity
 Μ,Ν,follows
 Honda ST1300,Honda ST series,part of the series
-Marjaniemi lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",part of
+Marjaniemi lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 Harlequin F.C.,Twickenham Stoop,home venue
 El Vilar,1968.0,elevation above sea level
 Pontevedra,Pontevedra Province,located in the administrative territorial entity
@@ -1932,7 +1932,7 @@ Offenbach am Main,list of cultural heritage monuments in Offenbach am Main,list 
 Moskovsky District,Belovodskoye,contains administrative territorial entity
 Vatican Library ID,distinct values constraint,property constraint
 Trabalho por uma Paulista Sustentável,Green Party,political ideology
-Örngrund,Admiralty List of Lights and Fog Signals,part of
+Örngrund,Admiralty List of Lights and Fog Signals,described by source
 Ben Vorlich,Arrochar Alps,mountain range
 Jiménez,Jiménez,family name identical to this given name
 Buk lesní v Třebovicích,22.0,height
@@ -2207,7 +2207,7 @@ Morbius,Matt Sazama,screenwriter
 The Beast in the Jungle,public domain,copyright status
 Buk lesní v Třebovicích,remarkable tree,has parts of the class
 West Ham station,District line,connecting line
-Kapelludden lighthouse,Admiralty List of Lights and Fog Signals,list of monuments
+Kapelludden lighthouse,Admiralty List of Lights and Fog Signals,described by source
 Chimney of Jesús Bueno Factory,Spain,country
 Trøllhøvdi,UTC±00:00,located in time zone
 Yuno Gasai,shirt,wears
@@ -2603,7 +2603,7 @@ Epistle to the Colossians,New Testament,genre
 Dunman,scheduled monument,heritage designation
 iPhone 5,-20,non-operating temperature
 San Clemente Dormitory,Spain,country
-Arazi Brahmandihi,0,number of households
+Arazi Brahmandihi,0,literate population
 aperture,always incomplete,expected completeness
 Continentale Deutsche Luftreederei,Hamburg Airport,airline hub
 V* V346 Tau,3905,effective temperature
@@ -2756,7 +2756,7 @@ Severe Tropical Storm Matmo,Matmo,named after
 Capital Airport Express,28.1,length
 German People's Party,1933-07-04,inception
 Lužecký klen,solitary,instance of
-Sandhammaren lighthouse,Admiralty List of Lights and Fog Signals,part of
+Sandhammaren lighthouse,Admiralty List of Lights and Fog Signals,described by source
 Kingsley Field Air National Guard Base,1248.0,elevation above sea level
 SN 2007bc,supernova,constellation
 830s BC,835 BC,followed by
@@ -2845,7 +2845,7 @@ Jerusalem,Israel,country
 Shōwamachi Station,Shōwamachi Line,connecting line
 Islamic art of the Emirate and the Caliphate,Spain,culture
 Uno,Android,operating system
-list of A7 roads,road,different from
+list of A7 roads,road,is a list of
 Aristophanes 14,Aristophanes 13 (Pauly-Wissowa),follows
 1967 Belgian Badminton Championships,1968 Belgian Badminton Championships,followed by
 Hammer Horror / Coffee Homeground,EMI,record label
@@ -3364,7 +3364,7 @@ Mariko,Ségou Region,located in the administrative territorial entity
 Tar-Ancalimë,female,sex or gender
 HD 27894,-59.410839750485,declination
 Xbox One,47000000,units sold
-Vallinsgrundet,"NGA List of Lights, Radio Aids and Fog Signals",part of
+Vallinsgrundet,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 Sakura Gakuin discography,Sakura Gakuin,performer
 canton of Saint-Médard-en-Jalles,arrondissement of Bordeaux,located in the administrative territorial entity
 Quartiere IACP Lorenteggio,housing estate,use
@@ -3572,7 +3572,7 @@ Belegorn,Ruling Steward of Gondor,position held
 University of Bordeaux 1,European University Association,affiliation
 Central African Republic,52.171,life expectancy
 iron-63,-1,parity quantum number
-list of A6 roads,Wikimedia set index article,is a list of
+list of A6 roads,Wikimedia set index article,instance of
 1997 FA Cup Final,1996 FA Cup Final,follows
 Lisa Simpson,female,sex or gender
 SDSS J080105.29+472749.2,Gravitational lens,discovery method
@@ -3649,7 +3649,7 @@ Uherské Hradiště,Uherské Hradiště District,located in the administrative t
 potassium-43,calcium-43,decays to
 Diccionario biográfico matritense,dictionary,described by source
 CSM București,EHF Women's Champions League,league
-Sandhammaren lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",list of monuments
+Sandhammaren lighthouse,"NGA List of Lights, Radio Aids and Fog Signals",described by source
 Marina di Maratea railway halt,Rete Ferroviaria Italiana,operator
 Krāslava,city under municipality jurisdiction in Latvia,located in the administrative territorial entity
 "Eastern view of Wrexham church, from Mount street",Frederick Peake,publisher
@@ -3720,7 +3720,7 @@ Morocco,-23.9,minimum temperature record
 Ion Mobility Spectrometry,Ion mobility spectrometry,main subject
 Rowing at the Asian Games,Asian Games,part of the series
 2017 Women's European Volleyball Championship qualification,2019 Women's European Volleyball Championship qualification,followed by
-Häradskär lighthouse,Admiralty List of Lights and Fog Signals,part of
+Häradskär lighthouse,Admiralty List of Lights and Fog Signals,described by source
 Delaware County,Media,capital
 Dukan Dam,Lake Dukan,reservoir created
 Podlaskie Voivodeship,Poland,country
@@ -3932,7 +3932,7 @@ Port de Valldemossa,Spain,country
 Spartans W.F.C.,Edinburgh,headquarters location
 1994 Winter Olympics,Nordic combined at the 1994 Winter Olympics,has part
 La Plata County,La Plata County,native label
-Chak Modpur,0,number of households
+Chak Modpur,0,literate population
 N51 road,Hainaut,located in the administrative territorial entity
 Koll Rock,Antarctica,continent
 caesium-147,-51920.064,mass excess
